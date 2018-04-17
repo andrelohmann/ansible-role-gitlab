@@ -5,6 +5,6 @@
     regexp: "^{{ item.namespace }}['{{ item.var }}'] = "
     insertafter: "^# {{ item.namespace }}['{{ item.var }}'] ="
     line: "# {{ item.namespace }}['{{ item.var }}'] = {{ item.value }}"
-  with_items: gitlab_additional_configs
+  with_items: "{{ gitlab_additional_configs }}"
   notify: gitlab reconfigure
 ...
