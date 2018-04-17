@@ -11,6 +11,11 @@ addons:
     packages:
     - python-pip
 
+before_install:
+  - sudo add-apt-repository ppa:ondrej/systemd -y
+  - sudo apt-get update -q
+  - sudo apt-get install systemd libpam-systemd systemd-gui systemd-extra-units -y
+
 install:
   # Install ansible
   - pip install ansible
