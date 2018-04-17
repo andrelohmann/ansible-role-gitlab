@@ -8,7 +8,7 @@
     gitlab_registry_url: docker.example.com
     gitlab_activate_mattermost: true
     gitlab_mattermost_url: chat.example.com
-    gitlab_additional_configs: # e.g. gitlab_rails['gitlab_email_from'] = 'gitlab@example.com'
+    gitlab_additional_configs:
     - namespace: gitlab_rails
       var: gitlab_email_from
       value: "'gitlab@example.com'"

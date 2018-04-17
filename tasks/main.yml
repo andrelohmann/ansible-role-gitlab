@@ -19,7 +19,7 @@
 - name: install gitlab
   apt:
     name: "{{ item }}"
-    state: installed
+    state: present
   with_items:
   - gitlab-ce
   notify: gitlab reconfigure
