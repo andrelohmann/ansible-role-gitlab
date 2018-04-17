@@ -1,0 +1,120 @@
+---
+- name: add mattermost backup script
+  template:
+    src: mattermost-backup.sh.j2
+    dest: /etc/mattermost-backup.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: create mattermost backup dir
+  file:
+    path: "{{ gitlab_mattermost_backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0770
+
+- name: enable mattermost
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^mattermost['enable'] ="
+    insertafter: "^# mattermost['enable'] ="
+    line: "mattermost['enable'] = true"
+  notify: gitlab reconfigure
+
+- name: enable mattermost
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^mattermost_nginx['enable'] ="
+    insertafter: "^# mattermost_nginx['enable'] ="
+    line: "mattermost_nginx['enable'] = true"
+  notify: gitlab reconfigure
+
+- name: disable mattermost email signup
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^mattermost['email_enable_sign_up_with_email'] ="
+    insertafter: "^# mattermost['email_enable_sign_up_with_email'] ="
+    line: "mattermost['email_enable_sign_up_with_email'] = false"
+  notify: gitlab reconfigure
+
+- name: disable mattermost email signin
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^mattermost['email_enable_sign_in_with_email'] ="
+    insertafter: "^# mattermost['email_enable_sign_in_with_email'] ="
+    line: "mattermost['email_enable_sign_in_with_email'] = false"
+  notify: gitlab reconfigure
+
+- name: setup mattermost http
+  block:
+
+  - name: set mattermost_external_url
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: 'mattermost_external_url '
+      line: "mattermost_external_url 'http://{{ gitlab_mattermost_url }}'"
+    notify: gitlab reconfigure
+
+  - name: set mattermost https redirect to false
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['redirect_http_to_https'] ="
+      insertafter: "^# mattermost_nginx['redirect_http_to_https']"
+      line: "mattermost_nginx['redirect_http_to_https'] = false"
+    notify: gitlab reconfigure
+
+  - name: uncomment mattermost ssl_certificate
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['ssl_certificate']= "
+      line: "# mattermost_nginx['ssl_certificate'] = '/etc/gitlab/ssl/#{node['fqdn']}.crt'"
+    notify: gitlab reconfigure
+
+  - name: uncomment mattermost ssl_certificate_key
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['ssl_certificate_key']= "
+      line: "# mattermost_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/#{node['fqdn']}.key'"
+    notify: gitlab reconfigure
+  # setup mattermost http
+  when: gitlab_use_https == False
+
+- name: setup mattermost https
+  block:
+
+  - name: set mattermost_external_url
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: 'mattermost_external_url '
+      line: "mattermost_external_url 'https://{{ gitlab_mattermost_url }}'"
+    notify: gitlab reconfigure
+
+  - name: set mattermost https redirect to true
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['redirect_http_to_https'] ="
+      insertafter: "^# mattermost_nginx['redirect_http_to_https']"
+      line: "mattermost_nginx['redirect_http_to_https'] = true"
+    notify: gitlab reconfigure
+
+  - name: set mattermost ssl_certificate
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['ssl_certificate'] = "
+      insertafter: "^# mattermost_nginx['ssl_certificate'] ="
+      line: "# mattermost_nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
+    notify: gitlab reconfigure
+
+  - name: set mattermost ssl_certificate_key
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^mattermost_nginx['ssl_certificate_key'] = "
+      insertafter: "^# mattermost_nginx['ssl_certificate_key'] ="
+      line: "# mattermost_nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
+    notify: gitlab reconfigure
+  # setup mattermost http
+  when: gitlab_use_https == True
+
+...

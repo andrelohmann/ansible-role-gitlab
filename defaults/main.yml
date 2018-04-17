@@ -1,0 +1,6 @@
+---
+gitlab_use_https: False
+gitlab_activate_prometheus: False
+gitlab_activate_mattermost: False
+gitlab_mattermost_backup_dir: /var/archives/mattermost
+...

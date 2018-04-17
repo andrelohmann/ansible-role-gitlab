@@ -1,0 +1,61 @@
+---
+- name: install packages
+  apt:
+    name: "{{item}}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items:
+  - curl
+  - openssh-server
+  - ca-certificates
+
+- name: add gitlab package server
+  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+
+- name: install gitlab
+  apt:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+  - gitlab-ce
+  notify: gitlab reconfigure
+
+- name: flush the gitlab reconfigure handler
+  meta: flush_handlers
+
+- name: set correct permissions for regsitry
+  file:
+    path: /var/opt/gitlab/gitlab-rails/shared/registry
+    state: directory
+    owner: registry
+    group: registry
+    mode: 0755
+
+- name: set http urls
+  include: http.yml
+  when: gitlab_use_https == False
+
+- name: set https urls and certificates
+  include: https.yml
+  when: gitlab_use_https == True
+
+- name: setup mattermost
+  include: mattermost.yml
+  when: gitlab_activate_mattermost == True
+
+- name: configure prometheus
+  include: prometheus.yml
+
+- name: set custom nginx config
+  include: custom_nginx_config.yml
+  when: gitlab_custom_nginx_config is defined
+
+- name: set additional configs
+  include: additional_configs.yml
+  when: gitlab_additional_configs is defined
+
+...

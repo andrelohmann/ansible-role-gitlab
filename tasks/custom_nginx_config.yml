@@ -1,0 +1,9 @@
+---
+- name: set custom nginx config
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^nginx['custom_nginx_config'] = "
+    insertafter: "^# nginx['custom_nginx_config'] ="
+    line: "# nginx['custom_nginx_config'] = 'include {{ nginx_custom_nginx_config }};'"
+  notify: gitlab reconfigure
+...

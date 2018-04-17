@@ -1,0 +1,19 @@
+---
+- name: activate prometheus
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^prometheus_monitoring['enable'] ="
+    insertafter: "^# prometheus_monitoring['enable'] ="
+    line: "prometheus_monitoring['enable'] = true"
+  when: gitlab_activate_prometheus == True
+  notify: gitlab reconfigure
+
+- name: deactivate prometheus
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^prometheus_monitoring['enable'] ="
+    insertafter: "^# prometheus_monitoring['enable'] ="
+    line: "prometheus_monitoring['enable'] = false"
+  when: gitlab_activate_prometheus == False
+  notify: gitlab reconfigure
+...
