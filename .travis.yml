@@ -14,7 +14,7 @@ addons:
 before_install:
   - sudo add-apt-repository ppa:pitti/systemd -y
   - sudo apt-get update -q
-  - sudo apt-get install systemd libpam-systemd systemd-gui systemd-extra-units -y
+  - sudo apt-get install systemd libpam-systemd -y
 
 install:
   # Install ansible
