@@ -27,14 +27,6 @@
 - name: flush the gitlab reconfigure handler
   meta: flush_handlers
 
-- name: set correct permissions for regsitry
-  file:
-    path: /var/opt/gitlab/gitlab-rails/shared/registry
-    state: directory
-    owner: registry
-    group: registry
-    mode: 0755
-
 - name: set http urls
   include: http.yml
   when: gitlab_use_https == False
