@@ -34,7 +34,7 @@ script:
   # Run the role/playbook with ansible-playbook.
   - ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo -vvv
   # cat gitlab.rb
-  - cat /etc/gitlab/gitlab.rb
+  - sudo cat /etc/gitlab/gitlab.rb
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
