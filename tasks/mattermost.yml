@@ -68,14 +68,14 @@
   - name: uncomment mattermost ssl_certificate
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx\\['ssl_certificate'\\] ="
+      regexp: "mattermost_nginx\\['ssl_certificate'\\] ="
       line: "# mattermost_nginx['ssl_certificate'] = '/etc/gitlab/ssl/#{node['fqdn']}.crt'"
     notify: gitlab reconfigure
 
   - name: uncomment mattermost ssl_certificate_key
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx\\['ssl_certificate_key'\\] ="
+      regexp: "mattermost_nginx\\['ssl_certificate_key'\\] ="
       line: "# mattermost_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/#{node['fqdn']}.key'"
     notify: gitlab reconfigure
   # setup mattermost http
@@ -104,7 +104,7 @@
       path: /etc/gitlab/gitlab.rb
       regexp: "^mattermost_nginx\\['ssl_certificate'\\] ="
       insertafter: "^# mattermost_nginx\\['ssl_certificate'\\] ="
-      line: "# mattermost_nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
+      line: "mattermost_nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
     notify: gitlab reconfigure
 
   - name: set mattermost ssl_certificate_key
@@ -112,7 +112,7 @@
       path: /etc/gitlab/gitlab.rb
       regexp: "^mattermost_nginx\\['ssl_certificate_key'\\] ="
       insertafter: "^# mattermost_nginx\\['ssl_certificate_key'\\] ="
-      line: "# mattermost_nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
+      line: "mattermost_nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
     notify: gitlab reconfigure
   # setup mattermost http
   when: gitlab_use_https == True
