@@ -9,24 +9,24 @@
 - name: set https redirect to true
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['redirect_http_to_https'] ="
-    insertafter: "^# nginx['redirect_http_to_https']"
+    regexp: "^nginx\\['redirect_http_to_https'\\] ="
+    insertafter: "^# nginx\\['redirect_http_to_https'\\] ="
     line: "nginx['redirect_http_to_https'] = true"
   notify: gitlab reconfigure
 
 - name: set ssl_certificate
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['ssl_certificate'] = "
-    insertafter: "^# nginx['ssl_certificate'] ="
+    regexp: "^nginx\\['ssl_certificate'\\] ="
+    insertafter: "^# nginx\\['ssl_certificate'\\] ="
     line: "# nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
   notify: gitlab reconfigure
 
 - name: set ssl_certificate_key
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['ssl_certificate_key'] = "
-    insertafter: "^# nginx['ssl_certificate_key'] ="
+    regexp: "^nginx\\['ssl_certificate_key'\\] ="
+    insertafter: "^# nginx\\['ssl_certificate_key'\\] ="
     line: "# nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
   notify: gitlab reconfigure
 
@@ -40,32 +40,32 @@
 - name: enable registry
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['enable'] ="
-    insertafter: "^# registry_nginx['enable'] ="
+    regexp: "^registry_nginx\\['enable'\\] ="
+    insertafter: "^# registry_nginx\\['enable'\\] ="
     line: "registry_nginx['enable'] = true"
   notify: gitlab reconfigure
 
 - name: set registry https redirect to true
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['redirect_http_to_https'] ="
-    insertafter: "^# registry_nginx['redirect_http_to_https']"
+    regexp: "^registry_nginx\\['redirect_http_to_https'\\] ="
+    insertafter: "^# registry_nginx\\['redirect_http_to_https'\\] ="
     line: "registry_nginx['redirect_http_to_https'] = true"
   notify: gitlab reconfigure
 
 - name: set registry ssl_certificate
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['ssl_certificate'] = "
-    insertafter: "^# registry_nginx['ssl_certificate'] ="
+    regexp: "^registry_nginx\\['ssl_certificate'\\] ="
+    insertafter: "^# registry_nginx\\['ssl_certificate'\\] ="
     line: "# registry_nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
   notify: gitlab reconfigure
 
 - name: set registry ssl_certificate_key
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['ssl_certificate_key'] = "
-    insertafter: "^# registry_nginx['ssl_certificate_key'] ="
+    regexp: "^registry_nginx\\['ssl_certificate_key'\\] ="
+    insertafter: "^# registry_nginx\\['ssl_certificate_key'\\] ="
     line: "# registry_nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
   notify: gitlab reconfigure
 ...

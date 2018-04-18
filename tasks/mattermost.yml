@@ -18,32 +18,32 @@
 - name: enable mattermost
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost['enable'] ="
-    insertafter: "^# mattermost['enable'] ="
+    regexp: "^mattermost\\['enable'\\] ="
+    insertafter: "^# mattermost\\['enable'\\] ="
     line: "mattermost['enable'] = true"
   notify: gitlab reconfigure
 
 - name: enable mattermost
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost_nginx['enable'] ="
-    insertafter: "^# mattermost_nginx['enable'] ="
+    regexp: "^mattermost_nginx\\['enable'\\] ="
+    insertafter: "^# mattermost_nginx\\['enable'\\] ="
     line: "mattermost_nginx['enable'] = true"
   notify: gitlab reconfigure
 
 - name: disable mattermost email signup
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost['email_enable_sign_up_with_email'] ="
-    insertafter: "^# mattermost['email_enable_sign_up_with_email'] ="
+    regexp: "^mattermost\\['email_enable_sign_up_with_email'\\] ="
+    insertafter: "^# mattermost\\['email_enable_sign_up_with_email'\\] ="
     line: "mattermost['email_enable_sign_up_with_email'] = false"
   notify: gitlab reconfigure
 
 - name: disable mattermost email signin
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost['email_enable_sign_in_with_email'] ="
-    insertafter: "^# mattermost['email_enable_sign_in_with_email'] ="
+    regexp: "^mattermost\\['email_enable_sign_in_with_email'\\] ="
+    insertafter: "^# mattermost\\['email_enable_sign_in_with_email'\\] ="
     line: "mattermost['email_enable_sign_in_with_email'] = false"
   notify: gitlab reconfigure
 
@@ -60,22 +60,22 @@
   - name: set mattermost https redirect to false
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['redirect_http_to_https'] ="
-      insertafter: "^# mattermost_nginx['redirect_http_to_https']"
+      regexp: "^mattermost_nginx\\['redirect_http_to_https'\\] ="
+      insertafter: "^# mattermost_nginx\\['redirect_http_to_https'\\] ="
       line: "mattermost_nginx['redirect_http_to_https'] = false"
     notify: gitlab reconfigure
 
   - name: uncomment mattermost ssl_certificate
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['ssl_certificate']= "
+      regexp: "^mattermost_nginx\\['ssl_certificate'\\] ="
       line: "# mattermost_nginx['ssl_certificate'] = '/etc/gitlab/ssl/#{node['fqdn']}.crt'"
     notify: gitlab reconfigure
 
   - name: uncomment mattermost ssl_certificate_key
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['ssl_certificate_key']= "
+      regexp: "^mattermost_nginx\\['ssl_certificate_key'\\] ="
       line: "# mattermost_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/#{node['fqdn']}.key'"
     notify: gitlab reconfigure
   # setup mattermost http
@@ -94,24 +94,24 @@
   - name: set mattermost https redirect to true
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['redirect_http_to_https'] ="
-      insertafter: "^# mattermost_nginx['redirect_http_to_https']"
+      regexp: "^mattermost_nginx\\['redirect_http_to_https'\\] ="
+      insertafter: "^# mattermost_nginx\\['redirect_http_to_https'\\] ="
       line: "mattermost_nginx['redirect_http_to_https'] = true"
     notify: gitlab reconfigure
 
   - name: set mattermost ssl_certificate
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['ssl_certificate'] = "
-      insertafter: "^# mattermost_nginx['ssl_certificate'] ="
+      regexp: "^mattermost_nginx\\['ssl_certificate'\\] ="
+      insertafter: "^# mattermost_nginx\\['ssl_certificate'\\] ="
       line: "# mattermost_nginx['ssl_certificate'] = '{{ gitlab_ssl_certificate }}'"
     notify: gitlab reconfigure
 
   - name: set mattermost ssl_certificate_key
     lineinfile:
       path: /etc/gitlab/gitlab.rb
-      regexp: "^mattermost_nginx['ssl_certificate_key'] = "
-      insertafter: "^# mattermost_nginx['ssl_certificate_key'] ="
+      regexp: "^mattermost_nginx\\['ssl_certificate_key'\\] ="
+      insertafter: "^# mattermost_nginx\\['ssl_certificate_key'\\] ="
       line: "# mattermost_nginx['ssl_certificate_key'] = '{{ gitlab_ssl_certificate_key }}'"
     notify: gitlab reconfigure
   # setup mattermost http

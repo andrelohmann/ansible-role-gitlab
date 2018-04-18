@@ -9,22 +9,22 @@
 - name: set https redirect to false
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['redirect_http_to_https'] ="
-    insertafter: "^# nginx['redirect_http_to_https']"
+    regexp: "^nginx\\['redirect_http_to_https'\\] ="
+    insertafter: "^# nginx\\['redirect_http_to_https'\\] ="
     line: "nginx['redirect_http_to_https'] = false"
   notify: gitlab reconfigure
 
 - name: uncomment ssl_certificate
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['ssl_certificate']= "
+    regexp: "^nginx\\['ssl_certificate'\\] ="
     line: "# nginx['ssl_certificate'] = '/etc/gitlab/ssl/#{node['fqdn']}.crt'"
   notify: gitlab reconfigure
 
 - name: uncomment ssl_certificate_key
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^nginx['ssl_certificate_key']= "
+    regexp: "^nginx\\['ssl_certificate_key'\\] ="
     line: "# nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/#{node['fqdn']}.key'"
   notify: gitlab reconfigure
 
@@ -38,30 +38,30 @@
 - name: enable registry
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['enable'] ="
-    insertafter: "^# registry_nginx['enable'] ="
+    regexp: "^registry_nginx\\['enable'\\] ="
+    insertafter: "^# registry_nginx\\['enable'\\] ="
     line: "registry_nginx['enable'] = true"
   notify: gitlab reconfigure
 
 - name: set registry https redirect to false
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['redirect_http_to_https'] ="
-    insertafter: "^# registry_nginx['redirect_http_to_https']"
+    regexp: "^registry_nginx\\['redirect_http_to_https'\\] ="
+    insertafter: "^# registry_nginx\\['redirect_http_to_https'\\] ="
     line: "registry_nginx['redirect_http_to_https'] = false"
   notify: gitlab reconfigure
 
 - name: uncomment registry ssl_certificate
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['ssl_certificate']= "
+    regexp: "^registry_nginx\\['ssl_certificate'\\] ="
     line: "# registry_nginx['ssl_certificate'] = '/etc/gitlab/ssl/#{node['fqdn']}.crt'"
   notify: gitlab reconfigure
 
 - name: uncomment registry ssl_certificate_key
   lineinfile:
     path: /etc/gitlab/gitlab.rb
-    regexp: "^registry_nginx['ssl_certificate_key']= "
+    regexp: "^registry_nginx\\['ssl_certificate_key'\\] ="
     line: "# registry_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/#{node['fqdn']}.key'"
   notify: gitlab reconfigure
 ...
