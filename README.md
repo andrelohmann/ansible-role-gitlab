@@ -21,7 +21,7 @@ The default set of variables defines the gitlab installation and needs at best t
     gitlab_activate_mattermost: true
     gitlab_mattermost_url: chat.example.com
     gitlab_mattermost_backup_dir: /var/archives/mattermost
-    nginx_custom_nginx_config: /etc/nginx/conf.d/example.conf
+    gitlab_custom_nginx_config: /etc/nginx/conf.d/example.conf
     gitlab_additional_configs: # e.g. gitlab_rails['gitlab_email_from'] = 'gitlab@example.com'
     - namespace: gitlab_rails
       var: gitlab_email_from
