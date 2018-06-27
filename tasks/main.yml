@@ -69,4 +69,7 @@
   include: additional_configs.yml
   when: gitlab_additional_configs is defined
 
+- name: restart gitlab
+  command: gitlab-ctl restart
+
 ...

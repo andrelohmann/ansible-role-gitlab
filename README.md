@@ -29,6 +29,15 @@ The default set of variables defines the gitlab installation and needs at best t
     - namespace: gitlab_rails
       var: gitlab_email_reply_to
       value: "'gitlab@example.com'"
+    gitlab_mattermost_additional_configs: # optional
+    # create dictionary from json variables available in /var/opt/gitlab/mattermost/config.json
+      TeamSettings:
+        SiteName: "chat.{{ aws_route53_domain }}"
+      EmailSettings:
+        SendEmailNotifications: True
+        SMTPUsername: "gitlab@example.com"
+        SMTPServer: "mail.example.com"
+        SMTPPort: "25"
 
 The following mandatory variables need to be set in group_vars/host_vars
 

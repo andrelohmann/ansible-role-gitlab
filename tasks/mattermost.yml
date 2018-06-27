@@ -31,24 +31,12 @@
     line: "mattermost_nginx['enable'] = true"
   notify: gitlab reconfigure
 
-#- name: disable mattermost email signup
-#  lineinfile:
-#    path: /etc/gitlab/gitlab.rb
-#    regexp: "^mattermost\\['email_enable_sign_up_with_email'\\] ="
-#    insertafter: "^# mattermost\\['email_enable_sign_up_with_email'\\] ="
-#    line: "mattermost['email_enable_sign_up_with_email'] = false"
-#  notify: gitlab reconfigure
-
-#- name: disable mattermost email signin
-#  lineinfile:
-#    path: /etc/gitlab/gitlab.rb
-#    regexp: "^mattermost\\['email_enable_sign_in_with_email'\\] ="
-#    insertafter: "^# mattermost\\['email_enable_sign_in_with_email'\\] ="
-#    line: "mattermost['email_enable_sign_in_with_email'] = false"
-#  notify: gitlab reconfigure
-
 - name: setup mattermost http
   block:
+
+  - name: set mattermost external url
+    set_fact:
+      _mattermost_external_url: "http://{{ gitlab_mattermost_url }}"
 
   - name: set mattermost_external_url
     lineinfile:
@@ -84,6 +72,10 @@
 - name: setup mattermost https
   block:
 
+  - name: set mattermost external url
+    set_fact:
+      _mattermost_external_url: "https://{{ gitlab_mattermost_url }}"
+
   - name: set mattermost_external_url
     lineinfile:
       path: /etc/gitlab/gitlab.rb
@@ -116,5 +108,36 @@
     notify: gitlab reconfigure
   # setup mattermost http
   when: gitlab_use_https == True
+
+- name: flush the gitlab reconfigure handler before manipulation the mattermost config
+  meta: flush_handlers
+
+- name: set mattermost configs dictionary
+  set_fact:
+    _mattermost_changes:
+      EmailSettings:
+        EnableSignUpWithEmail: False
+        EnableSignInWithEmail: False
+        EnableSignInWithUsername: False
+
+- name: Read Mattermost JSON file
+  command: cat /var/opt/gitlab/mattermost/config.json
+  register: _mattermost_json
+
+- name: alternate the mattermost json
+  set_fact:
+    mattermost_json: "{{ (_mattermost_json.stdout | from_json)|combine(_mattermost_changes, recursive=True) }}"
+
+- name: write back to object
+  copy:
+    content: "{{ mattermost_json | to_nice_json  }}"
+    dest: /var/opt/gitlab/mattermost/config.json
+    owner: mattermost
+    group: root
+    mode: 0644
+
+- name: include mattermost_additional_configs.yml
+  include: mattermost_additional_configs.yml
+  when: gitlab_mattermost_additional_configs is defined
 
 ...
