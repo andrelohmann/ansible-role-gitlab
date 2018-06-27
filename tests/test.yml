@@ -24,24 +24,6 @@
     - namespace: gitlab_rails
       var: smtp_port
       value: 25
-    - namespace: mattermost
-      var: email_send_email_notifications
-      value: "true"
-    - namespace: mattermost
-      var: email_smtp_username
-      value: "'gitlab@example.com'"
-    - namespace: mattermost
-      var: email_smtp_server
-      value: "'localhost'"
-    - namespace: mattermost
-      var: email_smtp_port
-      value: 25
-    - namespace: mattermost
-      var: email_feedback_name
-      value: "'GitLab Mattermost'"
-    - namespace: mattermost
-      var: email_feedback_email
-      value: "'gitlab@example.com'"
 
   roles:
   - andrelohmann.mailhog

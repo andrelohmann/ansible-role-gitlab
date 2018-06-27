@@ -31,21 +31,21 @@
     line: "mattermost_nginx['enable'] = true"
   notify: gitlab reconfigure
 
-- name: disable mattermost email signup
-  lineinfile:
-    path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost\\['email_enable_sign_up_with_email'\\] ="
-    insertafter: "^# mattermost\\['email_enable_sign_up_with_email'\\] ="
-    line: "mattermost['email_enable_sign_up_with_email'] = false"
-  notify: gitlab reconfigure
+#- name: disable mattermost email signup
+#  lineinfile:
+#    path: /etc/gitlab/gitlab.rb
+#    regexp: "^mattermost\\['email_enable_sign_up_with_email'\\] ="
+#    insertafter: "^# mattermost\\['email_enable_sign_up_with_email'\\] ="
+#    line: "mattermost['email_enable_sign_up_with_email'] = false"
+#  notify: gitlab reconfigure
 
-- name: disable mattermost email signin
-  lineinfile:
-    path: /etc/gitlab/gitlab.rb
-    regexp: "^mattermost\\['email_enable_sign_in_with_email'\\] ="
-    insertafter: "^# mattermost\\['email_enable_sign_in_with_email'\\] ="
-    line: "mattermost['email_enable_sign_in_with_email'] = false"
-  notify: gitlab reconfigure
+#- name: disable mattermost email signin
+#  lineinfile:
+#    path: /etc/gitlab/gitlab.rb
+#    regexp: "^mattermost\\['email_enable_sign_in_with_email'\\] ="
+#    insertafter: "^# mattermost\\['email_enable_sign_in_with_email'\\] ="
+#    line: "mattermost['email_enable_sign_in_with_email'] = false"
+#  notify: gitlab reconfigure
 
 - name: setup mattermost http
   block:
