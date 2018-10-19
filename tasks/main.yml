@@ -1,17 +1,19 @@
 ---
 - name: install packages
   apt:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: latest
     dpkg_options: 'force-confnew,force-confdef'
     autoclean: yes
     autoremove: yes
     update_cache: yes
     cache_valid_time: 3600
-  with_items:
-  - curl
-  - openssh-server
-  - ca-certificates
+  vars:
+    packages:
+    - curl
+    - openssh-server
+    - ca-certificates
+    - expect
 
 - name: add gitlab key
   apt_key:
@@ -37,11 +39,16 @@
 
 - name: install gitlab
   apt:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
-  with_items:
-  - gitlab-ce
+  vars:
+    packages:
+      - gitlab-ce
   notify: gitlab reconfigure
+
+- name: set initial root password
+  include: initial_root_password.yml
+  when: gitlab_initial_root_password is defined
 
 - name: flush the gitlab reconfigure handler
   meta: flush_handlers
@@ -71,5 +78,19 @@
 
 - name: restart gitlab
   command: gitlab-ctl restart
+
+- name: configure signup
+  shell: expect -c 'spawn gitlab-rails console production;
+                    expect "%s";
+                    send "x = ApplicationSetting.first\r";
+                    expect "%s";
+                    send "x.signup_enabled = false\r";
+                    expect "%s";
+                    send "x.save!\r";
+                    expect "%s";
+                    send "^D"'
+  args:
+    executable: /bin/bash
+  when: gitlab_disable_signup
 
 ...

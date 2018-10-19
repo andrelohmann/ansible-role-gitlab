@@ -43,6 +43,7 @@ The following mandatory variables need to be set in group_vars/host_vars
 
     gitlab_external_url: gitlab.example.com
     gitlab_registry_url: docker.example.com
+    gitlab_initial_root_password: __YOUR_PASSWORD__
 
 Example Playbook
 ----------------
