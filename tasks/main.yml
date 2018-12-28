@@ -76,6 +76,9 @@
   include: additional_configs.yml
   when: gitlab_additional_configs is defined
 
+- name: flush the gitlab reconfigure handler
+  meta: flush_handlers
+
 - name: restart gitlab
   command: gitlab-ctl restart
 
