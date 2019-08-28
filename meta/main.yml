@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: gitlab
   author: andrelohmann
   description: ansible galaxy role to install gitlab-ce omnibus package
   company: smartformer UG

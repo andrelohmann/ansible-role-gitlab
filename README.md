@@ -50,7 +50,7 @@ Example Playbook
 
     - hosts: gitlab
       roles:
-         - { role: andrelohmann.gitlab }
+         - andrelohmann.gitlab
 
 License
 -------
