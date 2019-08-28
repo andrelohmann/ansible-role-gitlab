@@ -1,19 +1,43 @@
 ---
-- name: activate prometheus
-  lineinfile:
-    path: /etc/gitlab/gitlab.rb
-    regexp: "^prometheus_monitoring\\['enable'\\] ="
-    insertafter: "^# prometheus_monitoring\\['enable'\\] ="
-    line: "prometheus_monitoring['enable'] = true"
-  when: gitlab_activate_prometheus == True
-  notify: gitlab reconfigure
+- name: setup prometheus
+  block:
 
-- name: deactivate prometheus
-  lineinfile:
-    path: /etc/gitlab/gitlab.rb
-    regexp: "^prometheus_monitoring\\['enable'\\] ="
-    insertafter: "^# prometheus_monitoring\\['enable'\\] ="
-    line: "prometheus_monitoring['enable'] = false"
+  - name: activate prometheus
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^prometheus_monitoring\\['enable'\\] ="
+      insertafter: "^# prometheus_monitoring\\['enable'\\] ="
+      line: "prometheus_monitoring['enable'] = true"
+    notify: gitlab reconfigure
+
+  - name: activate grafana
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^grafana\\['enable'\\] ="
+      insertafter: "^# grafana\\['enable'\\] ="
+      line: "grafana['enable'] = true"
+    notify: gitlab reconfigure
+
+  when: gitlab_activate_prometheus == True
+
+- name: setup prometheus
+  block:
+
+  - name: deactivate prometheus
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^prometheus_monitoring\\['enable'\\] ="
+      insertafter: "^# prometheus_monitoring\\['enable'\\] ="
+      line: "prometheus_monitoring['enable'] = false"
+    notify: gitlab reconfigure
+
+  - name: deactivate grafana
+    lineinfile:
+      path: /etc/gitlab/gitlab.rb
+      regexp: "^grafana\\['enable'\\] ="
+      insertafter: "^# grafana\\['enable'\\] ="
+      line: "grafana['enable'] = false"
+    notify: gitlab reconfigure
+
   when: gitlab_activate_prometheus == False
-  notify: gitlab reconfigure
 ...
