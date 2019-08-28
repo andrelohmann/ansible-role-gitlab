@@ -79,10 +79,11 @@
 - name: flush the gitlab reconfigure handler
   meta: flush_handlers
 
-# Pause for 15 seconds to let unicorn restart
-- name: wait for 15 seconds
+# Pause for 30 seconds to let unicorn restart
+- name: wait for 30 seconds
   pause:
     seconds: 30
+
 - name: restart gitlab
   command: gitlab-ctl restart
 
