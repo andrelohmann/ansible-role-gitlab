@@ -44,7 +44,7 @@
     set_fact:
       _pin_package: gitlab-ce
       _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release
+    when: gitlab_release != False
 
   - name: set gitlab-ce preferences file
     template:
@@ -53,7 +53,7 @@
       owner: root
       group: root
       mode: 0644
-    when: gitlab_release
+    when: gitlab_release != False
 
   - name: install gitlab
     apt:
@@ -95,7 +95,7 @@
     set_fact:
       _pin_package: gitlab-ee
       _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release
+    when: gitlab_release != False
 
   - name: set gitlab-ee preferences file
     template:
@@ -104,7 +104,7 @@
       owner: root
       group: root
       mode: 0644
-    when: gitlab_release
+    when: gitlab_release != False
 
   - name: install gitlab
     apt:
