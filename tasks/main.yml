@@ -115,7 +115,7 @@
         - gitlab-ee
     notify: gitlab reconfigure
 
-  when: gitlab_ee == False
+  when: gitlab_ee == True
 
 - name: set initial root password
   include: initial_root_password.yml
