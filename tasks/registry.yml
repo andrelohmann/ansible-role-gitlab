@@ -1,0 +1,16 @@
+---
+- name: set registry_external_url
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: 'registry_external_url '
+    line: "registry_external_url '{{ gitlab_registry_external_url }}'"
+  notify: gitlab reconfigure
+
+- name: enable registry
+  lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^registry\\['enable'\\] ="
+    insertafter: "^# registry\\['enable'\\] ="
+    line: "registry['enable'] = true"
+  notify: gitlab reconfigure
+...

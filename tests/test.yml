@@ -4,12 +4,13 @@
   become_method: sudo
   vars:
     mailhog_smtp_port: 25
-    gitlab_external_url: gitlab.example.com
-    gitlab_registry_url: docker.example.com
-    gitlab_activate_mattermost: true
-    gitlab_mattermost_url: chat.example.com
     gitlab_release: 12.4.3-ce.0
     gitlab_ee: True
+    gitlab_initial_root_password: PassW0rd
+    gitlab_external_url: http://gitlab.example.com
+    gitlab_letsencrypt_enable: False
+    gitlab_activate_monitoring: True
+    gitlab_registry_external_url: http://docker.example.com
     gitlab_additional_configs:
     - namespace: gitlab_rails
       var: gitlab_email_from
@@ -26,6 +27,21 @@
     - namespace: gitlab_rails
       var: smtp_port
       value: 25
+    gitlab_mattermost_external_url: http://chat.example.com
+    gitlab_mattermost_additional_configs:
+      TeamSettings:
+        SiteName: "chat.example.com"
+      EmailSettings:
+        EnableSignUpWithEmail: False
+        EnableSignInWithEmail: False
+        EnableSignInWithUsername: False
+        SendEmailNotifications: True
+        UseChannelInEmailNotifications: True
+        FeedbackName: "chat.example.com"
+        FeedbackEmail: "gitlab@example.com"
+        SMTPUsername: "gitlab@example.com"
+        SMTPServer: "localhost"
+        SMTPPort: "25"
 
   roles:
   - andrelohmann.mailhog

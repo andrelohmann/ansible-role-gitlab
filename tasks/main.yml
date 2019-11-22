@@ -124,28 +124,27 @@
 - name: flush the gitlab reconfigure handler
   meta: flush_handlers
 
-- name: set http urls
-  include: http.yml
-  when: gitlab_use_https == False
+- name: set external url
+  include: gitlab.yml
 
-- name: set https urls and certificates
-  include: https.yml
-  when: gitlab_use_https == True
+- name: use letsencrypt
+  include: letsencrypt.yml
+  when: gitlab_letsencrypt_enable == True
 
-- name: setup mattermost
-  include: mattermost.yml
-  when: gitlab_activate_mattermost == True
+- name: setup registry
+  include: registry.yml
+  when: gitlab_registry_external_url is defined
 
-- name: configure prometheus
-  include: prometheus.yml
-
-- name: set custom nginx config
-  include: custom_nginx_config.yml
-  when: gitlab_custom_nginx_config is defined
+- name: configure monitoring
+  include: monitoring.yml
 
 - name: set additional configs
   include: additional_configs.yml
   when: gitlab_additional_configs is defined
+
+- name: setup mattermost
+  include: mattermost.yml
+  when: gitlab_mattermost_external_url is defined
 
 - name: flush the gitlab reconfigure handler
   meta: flush_handlers

@@ -1,5 +1,5 @@
 ---
-- name: setup prometheus
+- name: activate monitoring
   block:
 
   - name: activate prometheus
@@ -18,9 +18,9 @@
       line: "grafana['enable'] = true"
     notify: gitlab reconfigure
 
-  when: gitlab_activate_prometheus == True
+  when: gitlab_activate_monitoring == True
 
-- name: setup prometheus
+- name: deactivate monitoring
   block:
 
   - name: deactivate prometheus
@@ -39,5 +39,5 @@
       line: "grafana['enable'] = false"
     notify: gitlab reconfigure
 
-  when: gitlab_activate_prometheus == False
+  when: gitlab_activate_monitoring == False
 ...
