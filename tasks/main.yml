@@ -15,36 +15,107 @@
     - ca-certificates
     - expect
 
-- name: add gitlab key
-  apt_key:
-    url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
-    state: present
+- name: install gitlab-ce
+  block:
 
-- name: add gitlab repo
-  apt_repository:
-    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-    filename: gitlab
-    state: present
-    update_cache: yes
+  - name: add gitlab key
+    apt_key:
+      url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
+      state: present
 
-- name: add gitlab src-repo
-  apt_repository:
-    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-    filename: gitlab
-    state: present
-    update_cache: yes
+  - name: add gitlab repo
+    apt_repository:
+      repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+      filename: gitlab
+      state: present
+      update_cache: yes
 
-#- name: add gitlab package server
-#  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+  - name: add gitlab src-repo
+    apt_repository:
+      repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+      filename: gitlab
+      state: present
+      update_cache: yes
 
-- name: install gitlab
-  apt:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - gitlab-ce
-  notify: gitlab reconfigure
+  #- name: add gitlab package server
+  #  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+
+  - name: set pin facts
+    set_fact:
+      _pin_package: gitlab-ce
+      _pin_version: "{{ gitlab_release }}"
+    when: gitlab_release
+
+  - name: set gitlab-ce preferences file
+    template:
+      src: pin.pref.j2
+      dest: "/etc/apt/preferences.d/gitlab-ce.pref"
+      owner: root
+      group: root
+      mode: 0644
+    when: gitlab_release
+
+  - name: install gitlab
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+        - gitlab-ce
+    notify: gitlab reconfigure
+
+  when: gitlab_ee == False
+
+- name: install gitlab-ee
+  block:
+
+  - name: add gitlab key
+    apt_key:
+      url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
+      state: present
+
+  - name: add gitlab repo
+    apt_repository:
+      repo: "deb https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+      filename: gitlab
+      state: present
+      update_cache: yes
+
+  - name: add gitlab src-repo
+    apt_repository:
+      repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+      filename: gitlab
+      state: present
+      update_cache: yes
+
+  #- name: add gitlab package server
+  #  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+
+  - name: set pin facts
+    set_fact:
+      _pin_package: gitlab-ee
+      _pin_version: "{{ gitlab_release }}"
+    when: gitlab_release
+
+  - name: set gitlab-ee preferences file
+    template:
+      src: pin.pref.j2
+      dest: "/etc/apt/preferences.d/gitlab-ee.pref"
+      owner: root
+      group: root
+      mode: 0644
+    when: gitlab_release
+
+  - name: install gitlab
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+        - gitlab-ee
+    notify: gitlab reconfigure
+
+  when: gitlab_ee == False
 
 - name: set initial root password
   include: initial_root_password.yml

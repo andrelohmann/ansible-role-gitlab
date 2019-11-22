@@ -8,6 +8,7 @@
     gitlab_registry_url: docker.example.com
     gitlab_activate_mattermost: true
     gitlab_mattermost_url: chat.example.com
+    gitlab_release: 12.4.3-ce.0
     gitlab_additional_configs:
     - namespace: gitlab_rails
       var: gitlab_email_from

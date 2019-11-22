@@ -4,4 +4,6 @@ gitlab_activate_prometheus: False
 gitlab_activate_mattermost: False
 gitlab_mattermost_backup_dir: /var/archives/mattermost
 gitlab_disable_signup: True
+gitlab_release: False
+gitlab_ee: False
 ...
