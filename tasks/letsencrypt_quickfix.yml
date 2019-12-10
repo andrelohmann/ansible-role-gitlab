@@ -1,0 +1,14 @@
+---
+- name: letsencrypt quickfix - delete original certificate.rb
+  file:
+    path: "/opt/gitlab/embedded/cookbooks/letsencrypt/resources/certificate.rb"
+    state: absent
+
+- name: letsencrypt quickfix - copy quickfix certificate.rb
+  copy:
+    src: letsencrypt_quickfix.rb
+    dest: "/opt/gitlab/embedded/cookbooks/letsencrypt/resources/certificate.rb"
+    owner: root
+    group: root
+    mode: 0644
+...

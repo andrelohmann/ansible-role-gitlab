@@ -43,8 +43,8 @@
   - name: set pin facts
     set_fact:
       _pin_package: gitlab-ce
-      _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release != False
+      _pin_version: "{{ _gitlab_release }}"
+    when: _gitlab_release != False
 
   - name: set gitlab-ce preferences file
     template:
@@ -53,7 +53,7 @@
       owner: root
       group: root
       mode: 0644
-    when: gitlab_release != False
+    when: _gitlab_release != False
 
   - name: install gitlab
     apt:
@@ -94,8 +94,8 @@
   - name: set pin facts
     set_fact:
       _pin_package: gitlab-ee
-      _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release != False
+      _pin_version: "{{ _gitlab_release }}"
+    when: _gitlab_release != False
 
   - name: set gitlab-ee preferences file
     template:
@@ -104,7 +104,7 @@
       owner: root
       group: root
       mode: 0644
-    when: gitlab_release != False
+    when: _gitlab_release != False
 
   - name: install gitlab
     apt:
@@ -116,6 +116,9 @@
     notify: gitlab reconfigure
 
   when: gitlab_ee == True
+
+- name: include letsencrypt quickfix (https://gitlab.com/gitlab-org/omnibus-gitlab/issues/4900#note_255620705)
+  include: letsencrypt_quickfix.yml
 
 - name: set initial root password
   include: initial_root_password.yml
