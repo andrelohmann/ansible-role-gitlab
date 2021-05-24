@@ -15,7 +15,7 @@ Role Variables
 
 The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars
 
-    gitlab_release: False # e.g. 12.4.3-ce.0
+    gitlab_release: False # e.g. 13.12.0-ce.0
     gitlab_ee: False # install gitlab-ee or gitlab-ce
     # gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
     # gitlab_external_url: http://gitlab.example.com
