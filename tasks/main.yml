@@ -13,7 +13,6 @@
     - curl
     - openssh-server
     - ca-certificates
-    - expect
     - tzdata
     - perl
 
@@ -119,58 +118,58 @@
 
   when: gitlab_ee == True
 
-- name: set initial root password
-  include: initial_root_password.yml
-  when: gitlab_initial_root_password is defined
-
-- name: flush the gitlab reconfigure handler
-  meta: flush_handlers
-
-- name: set external url
-  include: gitlab.yml
-
-- name: use letsencrypt
-  include: letsencrypt.yml
-  when: gitlab_letsencrypt_enable == True
-
-- name: setup registry
-  include: registry.yml
-  when: gitlab_registry_external_url is defined
-
-- name: configure monitoring
-  include: monitoring.yml
-
-- name: set additional configs
-  include: additional_configs.yml
-  when: gitlab_additional_configs is defined
-
-- name: setup mattermost
-  include: mattermost.yml
-  when: gitlab_mattermost_external_url is defined
-
-- name: flush the gitlab reconfigure handler
-  meta: flush_handlers
-
-# Pause for 60 seconds to let unicorn restart
-- name: wait for 60 seconds
-  pause:
-    seconds: 60
-
-- name: restart gitlab
-  command: gitlab-ctl restart
-
-- name: configure signup
-  shell: expect -c 'spawn gitlab-rails console production;
-                    expect "%s";
-                    send "x = ApplicationSetting.first\r";
-                    expect "%s";
-                    send "x.signup_enabled = false\r";
-                    expect "%s";
-                    send "x.save!\r";
-                    expect "%s";
-                    send "^D"'
-  args:
-    executable: /bin/bash
-  when: gitlab_disable_signup
+# - name: set initial root password
+#   include: initial_root_password.yml
+#   when: gitlab_initial_root_password is defined
+#
+# - name: flush the gitlab reconfigure handler
+#   meta: flush_handlers
+#
+# - name: set external url
+#   include: gitlab.yml
+#
+# - name: use letsencrypt
+#   include: letsencrypt.yml
+#   when: gitlab_letsencrypt_enable == True
+#
+# - name: setup registry
+#   include: registry.yml
+#   when: gitlab_registry_external_url is defined
+#
+# - name: configure monitoring
+#   include: monitoring.yml
+#
+# - name: set additional configs
+#   include: additional_configs.yml
+#   when: gitlab_additional_configs is defined
+#
+# - name: setup mattermost
+#   include: mattermost.yml
+#   when: gitlab_mattermost_external_url is defined
+#
+# - name: flush the gitlab reconfigure handler
+#   meta: flush_handlers
+#
+# # Pause for 60 seconds to let unicorn restart
+# - name: wait for 60 seconds
+#   pause:
+#     seconds: 60
+#
+# - name: restart gitlab
+#   command: gitlab-ctl restart
+#
+# - name: configure signup
+#   shell: expect -c 'spawn gitlab-rails console production;
+#                     expect "%s";
+#                     send "x = ApplicationSetting.first\r";
+#                     expect "%s";
+#                     send "x.signup_enabled = false\r";
+#                     expect "%s";
+#                     send "x.save!\r";
+#                     expect "%s";
+#                     send "^D"'
+#   args:
+#     executable: /bin/bash
+#   when: gitlab_disable_signup
 
 ...

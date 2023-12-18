@@ -1,0 +1,79 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  vars:
+    
+    mailhog_smtp_port: 25
+    gitlab_release: 12.4.3-ce.0
+    gitlab_ee: True
+    gitlab_initial_root_password: PassW0rd
+    gitlab_external_url: http://gitlab.example.com
+    gitlab_letsencrypt_enable: False
+    gitlab_activate_monitoring: True
+    gitlab_registry_external_url: http://docker.example.com
+    gitlab_additional_configs:
+    - namespace: gitlab_rails
+      var: gitlab_email_from
+      value: "'gitlab@example.com'"
+    - namespace: gitlab_rails
+      var: gitlab_email_reply_to
+      value: "'gitlab@example.com'"
+    - namespace: gitlab_rails
+      var: smtp_enable
+      value: "true"
+    - namespace: gitlab_rails
+      var: smtp_address
+      value: "'localhost'"
+    - namespace: gitlab_rails
+      var: smtp_port
+      value: 25
+    gitlab_mattermost_external_url: http://chat.example.com
+    gitlab_mattermost_additional_configs:
+      TeamSettings:
+        SiteName: "chat.example.com"
+      EmailSettings:
+        EnableSignUpWithEmail: False
+        EnableSignInWithEmail: False
+        EnableSignInWithUsername: False
+        SendEmailNotifications: True
+        UseChannelInEmailNotifications: True
+        FeedbackName: "chat.example.com"
+        FeedbackEmail: "gitlab@example.com"
+        SMTPUsername: "gitlab@example.com"
+        SMTPServer: "localhost"
+        SMTPPort: "25"
+
+  roles:
+  - andrelohmann.root_colored_prompt
+  - andrelohmann.docker
+  - ansible-role-gitlab
+
+  tasks:
+
+  - name: Install Adminer
+    ansible.builtin.apt:
+      name: "{{ packages }}"
+      state: present
+      dpkg_options: 'force-confnew,force-confdef'
+      autoclean: true
+      autoremove: true
+      update_cache: true
+      cache_valid_time: 3600
+    vars:
+      packages:
+      - adminer
+
+  - name: Enable Adminer
+    ansible.builtin.command: a2enconf adminer
+    args:
+      creates: /etc/apache2/conf-enabled/adminer.conf
+    register: adminer
+
+  - name: Restart Apache2
+    ansible.builtin.systemd:
+      service: apache2
+      state: restarted
+    when: adminer.changed
+...

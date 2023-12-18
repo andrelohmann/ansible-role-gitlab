@@ -1,42 +1,44 @@
 ---
 gitlab_release: False # e.g. 13.12.0-ce.0
-gitlab_ee: False # install gitlab-ee or gitlab-ce
-# gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
-# gitlab_external_url: http://gitlab.example.com
-gitlab_letsencrypt_enable: False
-# gitlab_additional_configs:
-# - namespace: gitlab_rails
-#   var: gitlab_email_from
-#   value: "'gitlab@example.com'"
-# - namespace: gitlab_rails
-#   var: gitlab_email_reply_to
-#   value: "'gitlab@example.com'"
-# - namespace: gitlab_rails
-#   var: smtp_enable
-#   value: "true"
-# - namespace: gitlab_rails
-#   var: smtp_address
-#   value: "'localhost'"
-# - namespace: gitlab_rails
-#   var: smtp_port
-#   value: 25
-# gitlab_registry_external_url: http://docker.example.com
-# gitlab_mattermost_external_url: http://chat.example.com
-gitlab_mattermost_additional_configs:
-  # TeamSettings:
-  #   SiteName: "chat.example.com"
-  EmailSettings:
-    EnableSignUpWithEmail: False
-    EnableSignInWithEmail: False
-    EnableSignInWithUsername: False
-    # SendEmailNotifications: True
-    # UseChannelInEmailNotifications: True
-    # FeedbackName: "chat.example.com"
-    # FeedbackEmail: "gitlab@example.com"
-    # SMTPUsername: "gitlab@example.com"
-    # SMTPServer: "localhost"
-    # SMTPPort: "25"
-gitlab_mattermost_backup_dir: /var/archives/mattermost
-gitlab_activate_monitoring: False
-gitlab_disable_signup: True
+gitlab_ee: True # install gitlab-ee or gitlab-ce
+
+#---
+# # gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
+# # gitlab_external_url: http://gitlab.example.com
+# gitlab_letsencrypt_enable: False
+# # gitlab_additional_configs:
+# # - namespace: gitlab_rails
+# #   var: gitlab_email_from
+# #   value: "'gitlab@example.com'"
+# # - namespace: gitlab_rails
+# #   var: gitlab_email_reply_to
+# #   value: "'gitlab@example.com'"
+# # - namespace: gitlab_rails
+# #   var: smtp_enable
+# #   value: "true"
+# # - namespace: gitlab_rails
+# #   var: smtp_address
+# #   value: "'localhost'"
+# # - namespace: gitlab_rails
+# #   var: smtp_port
+# #   value: 25
+# # gitlab_registry_external_url: http://docker.example.com
+# # gitlab_mattermost_external_url: http://chat.example.com
+# gitlab_mattermost_additional_configs:
+#   # TeamSettings:
+#   #   SiteName: "chat.example.com"
+#   EmailSettings:
+#     EnableSignUpWithEmail: False
+#     EnableSignInWithEmail: False
+#     EnableSignInWithUsername: False
+#     # SendEmailNotifications: True
+#     # UseChannelInEmailNotifications: True
+#     # FeedbackName: "chat.example.com"
+#     # FeedbackEmail: "gitlab@example.com"
+#     # SMTPUsername: "gitlab@example.com"
+#     # SMTPServer: "localhost"
+#     # SMTPPort: "25"
+# gitlab_mattermost_backup_dir: /var/archives/mattermost
+# gitlab_activate_monitoring: False
+# gitlab_disable_signup: True
 ...
