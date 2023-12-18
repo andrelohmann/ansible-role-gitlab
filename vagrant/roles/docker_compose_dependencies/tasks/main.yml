@@ -1,0 +1,28 @@
+---
+- name: install packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - docker.io
+    - docker-compose
+
+- name: Copy the docker compose file
+  copy:
+    src: docker-compose.yml
+    dest: "/opt/docker-compose.yml"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: start docker compose
+  shell: docker-compose -f /opt/docker-compose.yml up -d
+  args:
+    executable: /bin/bash
+...

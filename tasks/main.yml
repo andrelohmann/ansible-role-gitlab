@@ -63,7 +63,7 @@
     vars:
       packages:
         - gitlab-ce
-    notify: gitlab reconfigure
+    # notify: gitlab reconfigure
 
   when: gitlab_ee == False
 
@@ -114,7 +114,7 @@
     vars:
       packages:
         - gitlab-ee
-    notify: gitlab reconfigure
+    # notify: gitlab reconfigure
 
   when: gitlab_ee == True
 
