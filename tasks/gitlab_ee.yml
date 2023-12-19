@@ -1,0 +1,51 @@
+---
+
+- name: Add gitlab-ee key
+  ansible.builtin.apt_key:
+    url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
+    state: present
+
+- name: Add gitlab-ee repo
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    filename: gitlab-ee
+    state: present
+    update_cache: True
+
+- name: Add gitlab-ee src-repo
+  ansible.builtin.apt_repository:
+    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    filename: gitlab-ee
+    state: present
+    update_cache: True
+
+- name: Set pin facts
+  ansible.builtin.set_fact:
+    _pin_package: gitlab-ee
+    _pin_version: "{{ gitlab_release }}"
+  when: gitlab_release is defined and gitlab_release != 'latest'
+
+- name: Set gitlab-ee preferences file
+  ansible.builtin.template:
+    src: pin.pref.j2
+    dest: "/etc/apt/preferences.d/gitlab-ee.pref"
+    owner: root
+    group: root
+    mode: 0644
+  when: gitlab_release is defined and gitlab_release != 'latest'
+
+- name: Install gitlab-ee
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: True
+    autoremove: True
+    update_cache: True
+    cache_valid_time: 3600
+  vars:
+    packages:
+      - gitlab-ee
+  notify: Gitlab reconfigure
+
+...

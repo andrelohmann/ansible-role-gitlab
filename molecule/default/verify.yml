@@ -6,21 +6,12 @@
   gather_facts: false
   tasks:
 
-  - name: postgresql restart
-    systemd:
-      name: postgresql
-      state: restarted
+  - name: Check initial password file
+    ansible.builtin.stat:
+      path: /etc/gitlab/initial_root_password
+    register: initial_root_password_file
 
-  - name: Get Service Status
-    ansible.builtin.systemd:
-      name: "postgresql.service"
-    register: pg_service_status
-
-  # - name: dump postgresql service
-  #   ansible.builtin.debug:
-  #     var: pg_service_status
-
-  - name: Assert postgresql.service is enabled
+  - name: Assert the initial_root_password file exists
     ansible.builtin.assert:
-      that: pg_service_status.status.ActiveState == "active"
+      that: initial_root_password_file.stat.exists == True
 ...

@@ -1,39 +1,55 @@
 ---
-- name: add mattermost backup script
-  template:
+
+- name: Add mattermost backup script
+  ansible.builtin.template:
     src: mattermost-backup.sh.j2
     dest: /etc/mattermost-backup.sh
     owner: root
     group: root
     mode: 0700
+  when: gitlab_mattermost_backup_dir is defined
 
-- name: create mattermost backup dir
-  file:
+- name: Create mattermost backup dir
+  ansible.builtin.file:
     path: "{{ gitlab_mattermost_backup_dir }}"
     state: directory
     owner: root
     group: root
     mode: 0770
+  when: gitlab_mattermost_backup_dir is defined
 
-- name: enable mattermost
-  lineinfile:
+- name: Enable mattermost
+  ansible.builtin.lineinfile:
     path: /etc/gitlab/gitlab.rb
     regexp: "^mattermost\\['enable'\\] ="
     insertafter: "^# mattermost\\['enable'\\] ="
     line: "mattermost['enable'] = true"
-  notify: gitlab reconfigure
+  notify: Gitlab reconfigure
 
-- name: set mattermost_external_url
-  lineinfile:
+- name: Set mattermost_external_url
+  ansible.builtin.lineinfile:
     path: /etc/gitlab/gitlab.rb
     regexp: 'mattermost_external_url '
     line: "mattermost_external_url '{{ gitlab_mattermost_external_url }}'"
-  notify: gitlab reconfigure
+  notify: Gitlab reconfigure
 
-- name: flush the gitlab reconfigure handler before manipulation the mattermost config
-  meta: flush_handlers
+- name: Flush the gitlab reconfigure handler before manipulation the mattermost config
+  ansible.builtin.meta: flush_handlers
 
-- name: include mattermost_additional_configs.yml
-  include: mattermost_additional_configs.yml
+- name: Read Mattermost JSON file
+  command: cat /var/opt/gitlab/mattermost/config.json
+  register: _mattermost_json
+
+- name: Alternate the mattermost json
+  set_fact:
+    mattermost_json: "{{ (_mattermost_json.stdout | from_json)|combine(gitlab_mattermost_additional_configs, recursive=True) }}"
+
+- name: Write back to object
+  copy:
+    content: "{{ mattermost_json | to_nice_json  }}"
+    dest: /var/opt/gitlab/mattermost/config.json
+    owner: mattermost
+    group: root
+    mode: 0644
 
 ...

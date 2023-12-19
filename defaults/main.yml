@@ -1,44 +1,81 @@
 ---
-gitlab_release: False # e.g. 13.12.0-ce.0
+gitlab_release: latest # e.g. 16.6.0-ce.0
 gitlab_ee: True # install gitlab-ee or gitlab-ce
 
-#---
-# # gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
-# # gitlab_external_url: http://gitlab.example.com
-# gitlab_letsencrypt_enable: False
-# # gitlab_additional_configs:
-# # - namespace: gitlab_rails
-# #   var: gitlab_email_from
-# #   value: "'gitlab@example.com'"
-# # - namespace: gitlab_rails
-# #   var: gitlab_email_reply_to
-# #   value: "'gitlab@example.com'"
-# # - namespace: gitlab_rails
-# #   var: smtp_enable
-# #   value: "true"
-# # - namespace: gitlab_rails
-# #   var: smtp_address
-# #   value: "'localhost'"
-# # - namespace: gitlab_rails
-# #   var: smtp_port
-# #   value: 25
-# # gitlab_registry_external_url: http://docker.example.com
-# # gitlab_mattermost_external_url: http://chat.example.com
+# Set an initial root password at the first ansible run
+# Password must be 8+ chars
+# gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
+
+# disable the signup on the login page
+# users can only be created by admins
+gitlab_disable_signup: True
+
+# Set the configs for gitlab.rb
+gitlab_config: []
+# gitlab_config:
+# # set the URL
+# - namespace: external_url
+#   value: "'http://gitlab.lokal'"
+# # Enable the docker registry
+# - namespace: registry_external_url
+#   value: "'http://docker.lokal'"
+# - namespace: registry
+#   key: enable
+#   value: "true"
+# # Set the mailpit catch all data
+# - namespace: gitlab_rails
+#   key: gitlab_email_from
+#   value: "'gitlab@example.com'"
+# - namespace: gitlab_rails
+#   key: gitlab_email_reply_to
+#   value: "'gitlab@example.com'"
+# - namespace: gitlab_rails
+#   key: smtp_enable
+#   value: "true"
+# - namespace: gitlab_rails
+#   key: smtp_address
+#   value: "'localhost'"
+# - namespace: gitlab_rails
+#   key: smtp_port
+#   value: 8025
+# # Enable backups to S3
+# - namespace: gitlab_rails
+#   key: backup_upload_connection
+#   block: |
+#     gitlab_rails['backup_upload_connection'] = {
+#       'provider' => 'AWS',
+#       'region' => 'eu-central-1',
+#       'aws_access_key_id' => 'XXXXXXXXX',
+#       'aws_secret_access_key' => 'XXXXXXXXX',
+#       # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+#       'use_iam_profile' => false
+#     }
+# - namespace: gitlab_rails
+#   key: backup_upload_remote_directory
+#   value: "'__backup_upload_remote_directory__'"
+# # Set the repositories data dir
+# - regexp: "^# git_data_dirs"
+#   block: |
+#     git_data_dirs({
+#       "default" => {
+#         "path" => "/var/opt/gitlab/git-data"
+#       }
+#     })
+
+# Install and configure mattermost
+# gitlab_mattermost_external_url: http://chat.lokal
 # gitlab_mattermost_additional_configs:
-#   # TeamSettings:
-#   #   SiteName: "chat.example.com"
+#   TeamSettings:
+#     SiteName: "chat.example.com"
 #   EmailSettings:
 #     EnableSignUpWithEmail: False
 #     EnableSignInWithEmail: False
 #     EnableSignInWithUsername: False
-#     # SendEmailNotifications: True
-#     # UseChannelInEmailNotifications: True
-#     # FeedbackName: "chat.example.com"
-#     # FeedbackEmail: "gitlab@example.com"
-#     # SMTPUsername: "gitlab@example.com"
-#     # SMTPServer: "localhost"
-#     # SMTPPort: "25"
+#     SendEmailNotifications: True
+#     UseChannelInEmailNotifications: True
+#     FeedbackName: "chat.example.com"
+#     FeedbackEmail: "gitlab@example.com"
+#     SMTPUsername: "gitlab@example.com"
+#     SMTPServer: "localhost"
+#     SMTPPort: "25"
 # gitlab_mattermost_backup_dir: /var/archives/mattermost
-# gitlab_activate_monitoring: False
-# gitlab_disable_signup: True
-...

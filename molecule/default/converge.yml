@@ -2,36 +2,17 @@
 - name: Converge
   hosts: all
   vars:
-    postgresql_listen: "0.0.0.0"
-    postgresql_additional_packages:
-    - postgis
-    - osm2pgsql
-    postgresql_databases:
-    - name: test
-      encoding: UTF-8
-      state: present
-      schemas:
-      - name: schemaone
-        state: present
-      - name: schematwo
-        state: present
-      extensions:
-      - name: postgis
-        state: present
-      - name: hstore
-        state: present
-    postgresql_users:
-    - name: testuser
-      password: 1234test
-      state: present
-      privileges:
-      - database: test
-        privs: "All"
-        state: present
-      hosts:
-      - cidr: 0.0.0.0/0
-        database: test
-        state: present
+    gitlab_release: latest
+    gitlab_ee: True
+    gitlab_initial_root_password: PassW0rd.247!
+    gitlab_config:
+    # set the URL
+    - namespace: external_url
+      value: "'http://localhost'"
+    # Enable the docker registry
+    - namespace: registry
+      key: enable
+      value: "false"
   tasks:
   - name: "Include andrelohmann.gitlab"
     include_role:

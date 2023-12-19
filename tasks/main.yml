@@ -1,12 +1,12 @@
 ---
-- name: install packages
-  apt:
+- name: Install dependencies packages
+  ansible.builtin.apt:
     name: "{{ packages }}"
-    state: latest
+    state: present
     dpkg_options: 'force-confnew,force-confdef'
-    autoclean: yes
-    autoremove: yes
-    update_cache: yes
+    autoclean: True
+    autoremove: True
+    update_cache: True
     cache_valid_time: 3600
   vars:
     packages:
@@ -15,161 +15,52 @@
     - ca-certificates
     - tzdata
     - perl
+    - gpg
+    - expect
 
-- name: install gitlab-ce
-  block:
-
-  - name: add gitlab key
-    apt_key:
-      url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
-      state: present
-
-  - name: add gitlab repo
-    apt_repository:
-      repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-      filename: gitlab
-      state: present
-      update_cache: yes
-
-  - name: add gitlab src-repo
-    apt_repository:
-      repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-      filename: gitlab
-      state: present
-      update_cache: yes
-
-  #- name: add gitlab package server
-  #  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
-
-  - name: set pin facts
-    set_fact:
-      _pin_package: gitlab-ce
-      _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release != False
-
-  - name: set gitlab-ce preferences file
-    template:
-      src: pin.pref.j2
-      dest: "/etc/apt/preferences.d/gitlab-ce.pref"
-      owner: root
-      group: root
-      mode: 0644
-    when: gitlab_release != False
-
-  - name: install gitlab
-    apt:
-      name: "{{ packages }}"
-      state: present
-    vars:
-      packages:
-        - gitlab-ce
-    # notify: gitlab reconfigure
-
+- name: Install gitlab-ce
+  ansible.builtin.include_tasks: gitlab_ce.yml
   when: gitlab_ee == False
 
-- name: install gitlab-ee
-  block:
-
-  - name: add gitlab key
-    apt_key:
-      url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
-      state: present
-
-  - name: add gitlab repo
-    apt_repository:
-      repo: "deb https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-      filename: gitlab
-      state: present
-      update_cache: yes
-
-  - name: add gitlab src-repo
-    apt_repository:
-      repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
-      filename: gitlab
-      state: present
-      update_cache: yes
-
-  #- name: add gitlab package server
-  #  shell: curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
-
-  - name: set pin facts
-    set_fact:
-      _pin_package: gitlab-ee
-      _pin_version: "{{ gitlab_release }}"
-    when: gitlab_release != False
-
-  - name: set gitlab-ee preferences file
-    template:
-      src: pin.pref.j2
-      dest: "/etc/apt/preferences.d/gitlab-ee.pref"
-      owner: root
-      group: root
-      mode: 0644
-    when: gitlab_release != False
-
-  - name: install gitlab
-    apt:
-      name: "{{ packages }}"
-      state: present
-    vars:
-      packages:
-        - gitlab-ee
-    # notify: gitlab reconfigure
-
+- name: Install gitlab-ee
+  ansible.builtin.include_tasks: gitlab_ee.yml
   when: gitlab_ee == True
 
-# - name: set initial root password
-#   include: initial_root_password.yml
-#   when: gitlab_initial_root_password is defined
-#
-# - name: flush the gitlab reconfigure handler
-#   meta: flush_handlers
-#
-# - name: set external url
-#   include: gitlab.yml
-#
-# - name: use letsencrypt
-#   include: letsencrypt.yml
-#   when: gitlab_letsencrypt_enable == True
-#
-# - name: setup registry
-#   include: registry.yml
-#   when: gitlab_registry_external_url is defined
-#
-# - name: configure monitoring
-#   include: monitoring.yml
-#
-# - name: set additional configs
-#   include: additional_configs.yml
-#   when: gitlab_additional_configs is defined
-#
-# - name: setup mattermost
-#   include: mattermost.yml
-#   when: gitlab_mattermost_external_url is defined
-#
-# - name: flush the gitlab reconfigure handler
-#   meta: flush_handlers
-#
-# # Pause for 60 seconds to let unicorn restart
-# - name: wait for 60 seconds
-#   pause:
-#     seconds: 60
-#
-# - name: restart gitlab
-#   command: gitlab-ctl restart
-#
-# - name: configure signup
-#   shell: expect -c 'spawn gitlab-rails console production;
-#                     expect "%s";
-#                     send "x = ApplicationSetting.first\r";
-#                     expect "%s";
-#                     send "x.signup_enabled = false\r";
-#                     expect "%s";
-#                     send "x.save!\r";
-#                     expect "%s";
-#                     send "^D"'
-#   args:
-#     executable: /bin/bash
-#   when: gitlab_disable_signup
+- name: Configure gitlab.rb
+  ansible.builtin.include_tasks: gitlab_config.yml
+  loop: "{{ gitlab_config }}"
+
+- name: Set initial root password
+  ansible.builtin.include_tasks: initial_root_password.yml
+  when: gitlab_initial_root_password is defined
+
+- name: Setup mattermost
+  ansible.builtin.include_tasks: mattermost.yml
+  when: gitlab_mattermost_external_url is defined
+
+- name: Flush the gitlab reconfigure handler
+  ansible.builtin.meta: flush_handlers
+
+# Pause for 60 seconds to let unicorn restart
+- name: Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Restart gitlab
+  ansible.builtin.command: gitlab-ctl restart
+
+- name: Configure signup
+  ansible.builtin.shell: expect -c 'spawn gitlab-rails console production;
+                    expect "%s";
+                    send "x = ApplicationSetting.first\r";
+                    expect "%s";
+                    send "x.signup_enabled = false\r";
+                    expect "%s";
+                    send "x.save!\r";
+                    expect "%s";
+                    send "^D"'
+  args:
+    executable: /bin/bash
+  when: gitlab_disable_signup
 
 ...
