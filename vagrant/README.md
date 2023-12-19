@@ -21,22 +21,20 @@ The vagrant role will be applied automatically during the vagrant up process.
 
 ```
 vagrant ssh
-cd /etc/ansible/roles/ansible-role-postgresql
+cd /etc/ansible/roles/ansible-role-gitlab
 molecule test
 ```
 
-### Test the permissions via adminer
+### Test the installation
 
-The vagrant machine also installs adminer, which can be opened via the following link:
+You can test the several domains:
 
-  * http://pg.lokal/adminer
+  * http://gitlab.lokal
+  * http://chat.lokal
 
-Use the following credentials (extractet from the playbook.yml) to login to the database:
+Use the following credentials for the first gitlab login:
 
 ```
-System: PostgreSQL
-Server: localhost
-Username: testuser
-Password: 1234test
-Database: test
+Username: root
+Password: P@ssW0rd.123!
 ```

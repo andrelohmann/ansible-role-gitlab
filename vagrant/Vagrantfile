@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
     # vagrant-hostmanager is necessary to update /etc/hosts on hosts and guests
     b.vm.network "private_network", ip: vagrant_config['ip']
     b.vm.hostname = vagrant_config['domain']
-    #b.hostmanager.aliases = vagrant_config['aliases']
+    b.hostmanager.aliases = vagrant_config['aliases']
 
     b.vm.synced_folder ".", "/vagrant", disabled: true
     b.vm.synced_folder ".", "/vagrant/ansible_vagrant", create: true, owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=775"]

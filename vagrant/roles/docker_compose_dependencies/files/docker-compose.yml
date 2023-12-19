@@ -48,6 +48,7 @@ services:
     image: axllent/mailpit
     ports:
       - 8025:8025
+      - 1025:1025
     environment:
       - POSTGRES_DB=apidemo
       - POSTGRES_USER=apidemo

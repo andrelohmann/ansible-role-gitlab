@@ -5,45 +5,73 @@
 
   vars:
 
-    mailhog_smtp_port: 25
-    gitlab_release: 12.4.3-ce.0
+    # gitlab_release: 12.4.3-ce.0
     gitlab_ee: True
-    gitlab_initial_root_password: PassW0rd
-    gitlab_external_url: http://gitlab.example.com
-    gitlab_letsencrypt_enable: False
-    gitlab_activate_monitoring: True
-    gitlab_registry_external_url: http://docker.example.com
-    gitlab_additional_configs:
+    gitlab_initial_root_password: P@ssW0rd.123!
+    gitlab_config:
+    # set the URL
+    - namespace: external_url
+      value: "'http://gitlab.lokal'"
+    # Enable the docker registry
+    - namespace: registry_external_url
+      value: "'http://docker.lokal'"
+    - namespace: registry
+      key: enable
+      value: "true"
+    # Set the mailpit catch all data
     - namespace: gitlab_rails
-      var: gitlab_email_from
+      key: gitlab_email_from
       value: "'gitlab@example.com'"
     - namespace: gitlab_rails
-      var: gitlab_email_reply_to
+      key: gitlab_email_reply_to
       value: "'gitlab@example.com'"
     - namespace: gitlab_rails
-      var: smtp_enable
+      key: smtp_enable
       value: "true"
     - namespace: gitlab_rails
-      var: smtp_address
+      key: smtp_address
       value: "'localhost'"
     - namespace: gitlab_rails
-      var: smtp_port
-      value: 25
-    gitlab_mattermost_external_url: http://chat.example.com
+      key: smtp_port
+      value: 1025
+    # Enable backups to S3
+    # - namespace: gitlab_rails
+    #   key: backup_upload_connection
+    #   block: |
+    #     gitlab_rails['backup_upload_connection'] = {
+    #       'provider' => 'AWS',
+    #       'region' => 'eu-central-1',
+    #       'aws_access_key_id' => 'XXXXXXX',
+    #       'aws_secret_access_key' => 'XXXXXXX',
+    #       # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+    #       'use_iam_profile' => false
+    #     }
+    # - namespace: gitlab_rails
+    #   key: backup_upload_remote_directory
+    #   value: "'__your_backup_upload_remote_directory__'"
+    # Set the repositories data dir
+    - regexp: "^# git_data_dirs"
+      block: |
+        git_data_dirs({
+          "default" => {
+            "path" => "/var/opt/gitlab/git-data"
+          }
+        })
+    gitlab_mattermost_external_url: http://chat.lokal
     gitlab_mattermost_additional_configs:
       TeamSettings:
-        SiteName: "chat.example.com"
+        SiteName: "chat.lokal"
       EmailSettings:
         EnableSignUpWithEmail: False
         EnableSignInWithEmail: False
         EnableSignInWithUsername: False
         SendEmailNotifications: True
         UseChannelInEmailNotifications: True
-        FeedbackName: "chat.example.com"
+        FeedbackName: "chat.lokal"
         FeedbackEmail: "gitlab@example.com"
         SMTPUsername: "gitlab@example.com"
         SMTPServer: "localhost"
-        SMTPPort: "25"
+        SMTPPort: "1025"
 
   roles:
   - andrelohmann.root_colored_prompt
