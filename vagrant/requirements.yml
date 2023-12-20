@@ -2,6 +2,7 @@
 
 roles:
 - andrelohmann.root_colored_prompt
+- andrelohmann.terraform
 
 collections: []
 

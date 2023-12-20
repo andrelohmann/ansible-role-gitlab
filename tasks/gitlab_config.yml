@@ -1,7 +1,7 @@
 ---
 
 - name: Set namespace only configs
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/gitlab/gitlab.rb
     regexp: '^{{ item.namespace }} '
     insertbefore: "^# {{ item.namespace }} "

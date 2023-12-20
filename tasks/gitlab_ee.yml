@@ -10,14 +10,14 @@
     repo: "deb https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
     filename: gitlab-ee
     state: present
-    update_cache: True
+    update_cache: true
 
 - name: Add gitlab-ee src-repo
   ansible.builtin.apt_repository:
     repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
     filename: gitlab-ee
     state: present
-    update_cache: True
+    update_cache: true
 
 - name: Set pin facts
   ansible.builtin.set_fact:
@@ -39,9 +39,9 @@
     name: "{{ packages }}"
     state: present
     dpkg_options: 'force-confnew,force-confdef'
-    autoclean: True
-    autoremove: True
-    update_cache: True
+    autoclean: true
+    autoremove: true
+    update_cache: true
     cache_valid_time: 3600
   vars:
     packages:

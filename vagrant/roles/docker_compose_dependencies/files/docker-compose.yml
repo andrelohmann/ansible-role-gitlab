@@ -1,9 +1,10 @@
+---
 version: '3.9'
 
 services:
   postgresdb:
     image: postgres
-    #image: postgres:15-alpine
+    # image: postgres:15-alpine
     ports:
     - 5432:5432
     environment:
@@ -17,11 +18,11 @@ services:
     volumes:
     - redisdata:/data
     ports:
-    - "6379:6379"
+    - 6379:6379
     command: redis-server --save 60 1 --loglevel warning --requirepass r3dis.S3cr3t
   redis-commander:
-    #container_name: redis-commander
-    #hostname: redis-commander
+    # container_name: redis-commander
+    # hostname: redis-commander
     image: ghcr.io/joeferner/redis-commander:latest
     restart: always
     environment:
@@ -34,7 +35,7 @@ services:
     image: dpage/pgadmin4
     restart: always
     ports:
-    - "8888:80"
+    - 8888:80
     environment:
     - PGADMIN_DEFAULT_EMAIL=admin@example.com
     - PGADMIN_DEFAULT_PASSWORD=admin
@@ -55,8 +56,20 @@ services:
     - POSTGRES_DB=apidemo
     - POSTGRES_USER=apidemo
     - POSTGRES_PASSWORD=apidemo
+  kroki:
+    image: yuzutech/kroki
+    ports:
+    - 8000:8000
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    ports:
+    - 9200:9200
 
 volumes:
   pgdata:
+    name: "pgdata"
   pgadmindata:
+    name: "pgadmindata"
   redisdata:
+    name: "redisdata"
+...

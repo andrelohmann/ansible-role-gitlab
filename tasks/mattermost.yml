@@ -37,16 +37,17 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Read Mattermost JSON file
-  command: cat /var/opt/gitlab/mattermost/config.json
+  ansible.builtin.command: cat /var/opt/gitlab/mattermost/config.json
   register: _mattermost_json
+  changed_when: false
 
 - name: Alternate the mattermost json
-  set_fact:
-    mattermost_json: "{{ (_mattermost_json.stdout | from_json)|combine(gitlab_mattermost_additional_configs, recursive=True) }}"
+  ansible.builtin.set_fact:
+    mattermost_json: "{{ (_mattermost_json.stdout | from_json) | combine(gitlab_mattermost_additional_configs, recursive=True) }}"
 
 - name: Write back to object
-  copy:
-    content: "{{ mattermost_json | to_nice_json  }}"
+  ansible.builtin.copy:
+    content: "{{ mattermost_json | to_nice_json }}"
     dest: /var/opt/gitlab/mattermost/config.json
     owner: mattermost
     group: root

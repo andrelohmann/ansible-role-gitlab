@@ -10,11 +10,11 @@ galaxy_info:
   min_ansible_version: "2.11"
 
   platforms:
-    - name: Ubuntu
-      versions:
-      - bionic
-      - focal
-      - jammy
+  - name: Ubuntu
+    versions:
+    - bionic
+    - focal
+    - jammy
 
   galaxy_tags:
   - gitlab

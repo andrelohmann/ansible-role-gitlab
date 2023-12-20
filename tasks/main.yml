@@ -4,9 +4,9 @@
     name: "{{ packages }}"
     state: present
     dpkg_options: 'force-confnew,force-confdef'
-    autoclean: True
-    autoremove: True
-    update_cache: True
+    autoclean: true
+    autoremove: true
+    update_cache: true
     cache_valid_time: 3600
   vars:
     packages:
@@ -20,11 +20,11 @@
 
 - name: Install gitlab-ce
   ansible.builtin.include_tasks: gitlab_ce.yml
-  when: gitlab_ee == False
+  when: not gitlab_ee
 
 - name: Install gitlab-ee
   ansible.builtin.include_tasks: gitlab_ee.yml
-  when: gitlab_ee == True
+  when: gitlab_ee
 
 - name: Configure gitlab.rb
   ansible.builtin.include_tasks: gitlab_config.yml
@@ -49,19 +49,22 @@
 - name: Restart gitlab
   ansible.builtin.command: gitlab-ctl restart
   when: gitlab_run_reconfigure
+  changed_when: false
 
 - name: Configure signup
-  ansible.builtin.shell: expect -c 'spawn gitlab-rails console production;
-                    expect "%s";
-                    send "x = ApplicationSetting.first\r";
-                    expect "%s";
-                    send "x.signup_enabled = false\r";
-                    expect "%s";
-                    send "x.save!\r";
-                    expect "%s";
-                    send "^D"'
+  ansible.builtin.shell: >
+    expect -c 'spawn gitlab-rails console production;
+    expect "%s";
+    send "x = ApplicationSetting.first\r";
+    expect "%s";
+    send "x.signup_enabled = false\r";
+    expect "%s";
+    send "x.save!\r";
+    expect "%s";
+    send "^D"'
   args:
     executable: /bin/bash
   when: gitlab_disable_signup and gitlab_run_reconfigure
+  changed_when: false
 
 ...
