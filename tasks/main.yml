@@ -48,6 +48,7 @@
 
 - name: Restart gitlab
   ansible.builtin.command: gitlab-ctl restart
+  when: gitlab_run_reconfigure
 
 - name: Configure signup
   ansible.builtin.shell: expect -c 'spawn gitlab-rails console production;
@@ -61,6 +62,6 @@
                     send "^D"'
   args:
     executable: /bin/bash
-  when: gitlab_disable_signup
+  when: gitlab_disable_signup and gitlab_run_reconfigure
 
 ...

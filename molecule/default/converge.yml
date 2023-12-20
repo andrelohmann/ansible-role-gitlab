@@ -5,6 +5,7 @@
     gitlab_release: latest
     gitlab_ee: True
     gitlab_initial_root_password: PassW0rd.247!
+    gitlab_run_reconfigure: False
     gitlab_config:
     # set the URL
     - namespace: external_url

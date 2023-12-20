@@ -1,6 +1,7 @@
 ---
 gitlab_release: latest # e.g. 16.6.0-ce.0
 gitlab_ee: True # install gitlab-ee or gitlab-ce
+gitlab_run_reconfigure: True
 
 # Set an initial root password at the first ansible run
 # Password must be 8+ chars

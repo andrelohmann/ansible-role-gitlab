@@ -15,8 +15,10 @@ services:
   redis:
     image: redis:7-alpine
     volumes:
-      - redisdata:/data
-    command: redis-server --save 60 1 --loglevel warning
+    - redisdata:/data
+    ports:
+    - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning --requirepass r3dis.S3cr3t
   redis-commander:
     #container_name: redis-commander
     #hostname: redis-commander
@@ -27,12 +29,12 @@ services:
     ports:
     - "8081:8081"
     depends_on:
-      - redis
+    - redis
   pgadmin:
     image: dpage/pgadmin4
     restart: always
     ports:
-      - "8888:80"
+    - "8888:80"
     environment:
     - PGADMIN_DEFAULT_EMAIL=admin@example.com
     - PGADMIN_DEFAULT_PASSWORD=admin
@@ -40,19 +42,19 @@ services:
     - PGADMIN_CONFIG_MAIL_SERVER="mailpit"
     - PGADMIN_CONFIG_MAIL_PORT=1025
     volumes:
-      - pgadmindata:/var/lib/pgadmin
+    - pgadmindata:/var/lib/pgadmin
     depends_on:
-      - postgresdb
-      - mailpit
+    - postgresdb
+    - mailpit
   mailpit:
     image: axllent/mailpit
     ports:
-      - 8025:8025
-      - 1025:1025
+    - 8025:8025
+    - 1025:1025
     environment:
-      - POSTGRES_DB=apidemo
-      - POSTGRES_USER=apidemo
-      - POSTGRES_PASSWORD=apidemo
+    - POSTGRES_DB=apidemo
+    - POSTGRES_USER=apidemo
+    - POSTGRES_PASSWORD=apidemo
 
 volumes:
   pgdata:
