@@ -1,9 +1,0 @@
----
-- name: enable letsencrypt
-  lineinfile:
-    path: /etc/gitlab/gitlab.rb
-    regexp: "^letsencrypt\\['enable'\\] ="
-    insertafter: "^# letsencrypt\\['enable'\\] ="
-    line: "letsencrypt['enable'] = true"
-  notify: gitlab reconfigure
-...

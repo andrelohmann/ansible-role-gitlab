@@ -1,0 +1,131 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  vars:
+
+    # gitlab_release: 12.4.3-ce.0
+    gitlb_api_base_url: http://gitlab.lokal/api/v4/
+    gitlab_ee: true
+    gitlab_initial_root_password: P@ssW0rd.123!
+    gitlab_config:
+
+    # set the URL
+    - namespace: external_url
+      value: "'http://gitlab.lokal'"
+
+    # Enable the docker registry
+    - namespace: registry_external_url
+      value: "'http://docker.lokal'"
+    - namespace: registry
+      key: enable
+      value: "true"
+
+    # Set the mailpit catch all data
+    - namespace: gitlab_rails
+      key: gitlab_email_from
+      value: "'gitlab@example.com'"
+    - namespace: gitlab_rails
+      key: gitlab_email_reply_to
+      value: "'gitlab@example.com'"
+    - namespace: gitlab_rails
+      key: smtp_enable
+      value: "true"
+    - namespace: gitlab_rails
+      key: smtp_address
+      value: "'localhost'"
+    - namespace: gitlab_rails
+      key: smtp_port
+      value: 1025
+
+    # Set external redis
+    - namespace: redis
+      key: enable
+      value: "'false'"
+    - namespace: gitlab_rails
+      key: redis_host
+      value: "'localhost'"
+    - namespace: gitlab_rails
+      key: redis_port
+      value: "6379"
+    - namespace: gitlab_rails
+      key: redis_password
+      value: "'r3dis.S3cr3t'"
+
+    # Set external postgres
+    - namespace: postgresql
+      key: enable
+      value: "'false'"
+    - namespace: gitlab_rails
+      key: db_adapter
+      value: "'postgresql'"
+    - namespace: gitlab_rails
+      key: db_encoding
+      value: "'utf8'"
+    - namespace: gitlab_rails
+      key: db_host
+      value: "'localhost'"
+    - namespace: gitlab_rails
+      key: db_port
+      value: "5432"
+    - namespace: gitlab_rails
+      key: db_database
+      value: "'gitlab'"
+    - namespace: gitlab_rails
+      key: db_username
+      value: "'gitlab'"
+    - namespace: gitlab_rails
+      key: db_password
+      value: "'gitlab'"
+
+    # Enable backups to S3
+    # - namespace: gitlab_rails
+    #   key: backup_upload_connection
+    #   block: |
+    #     gitlab_rails['backup_upload_connection'] = {
+    #       'provider' => 'AWS',
+    #       'region' => 'eu-central-1',
+    #       'aws_access_key_id' => 'XXXXXXX',
+    #       'aws_secret_access_key' => 'XXXXXXX',
+    #       # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+    #       'use_iam_profile' => false
+    #     }
+    # - namespace: gitlab_rails
+    #   key: backup_upload_remote_directory
+    #   value: "'__your_backup_upload_remote_directory__'"
+    # Set the repositories data dir
+    # - regexp: "^# git_data_dirs"
+    #   block: |
+    #     git_data_dirs({
+    #       "default" => {
+    #         "path" => "/var/opt/gitlab/git-data"
+    #       }
+    #     })
+    # gitlab_mattermost_external_url: http://chat.lokal
+    # gitlab_mattermost_additional_configs:
+    #   TeamSettings:
+    #     SiteName: "chat.lokal"
+    #   EmailSettings:
+    #     EnableSignUpWithEmail: False
+    #     EnableSignInWithEmail: False
+    #     EnableSignInWithUsername: False
+    #     SendEmailNotifications: True
+    #     UseChannelInEmailNotifications: True
+    #     FeedbackName: "chat.lokal"
+    #     FeedbackEmail: "gitlab@example.com"
+    #     SMTPUsername: "gitlab@example.com"
+    #     SMTPServer: "localhost"
+    #     SMTPPort: "1025"
+
+    # Access Token to attach to root user for terraform api access
+    gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
+
+  roles:
+  - andrelohmann.root_colored_prompt
+  - docker_compose_dependencies
+  - andrelohmann.terraform
+  - ansible-role-gitlab
+  - gitlab_configuration
+
+...

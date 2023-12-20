@@ -3,18 +3,18 @@ galaxy_info:
   role_name: gitlab
   author: andrelohmann
   description: ansible galaxy role to install gitlab-ce omnibus package
-  company: smartformer UG
+  company: CloudCourse GmbH
 
   license: MIT
 
-  min_ansible_version: 2.7
+  min_ansible_version: "2.11"
 
   platforms:
-    - name: Ubuntu
-      versions:
-      - xenial
-      - bionic
-      - focal
+  - name: Ubuntu
+    versions:
+    - bionic
+    - focal
+    - jammy
 
   galaxy_tags:
   - gitlab

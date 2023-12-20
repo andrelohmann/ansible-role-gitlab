@@ -1,0 +1,34 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+
+  - name: Install dependencies packages
+    ansible.builtin.apt:
+      name: "{{ packages }}"
+      state: present
+      dpkg_options: 'force-confnew,force-confdef'
+      autoclean: true
+      autoremove: true
+      update_cache: true
+      cache_valid_time: 3600
+    vars:
+      packages:
+      - ruby
+
+  - name: Run ruby command agains gitlab.rb
+    ansible.builtin.shell: ruby -c /etc/gitlab/gitlab.rb
+    register: gitlab_config_status
+
+  - name: Dump gitlab config status
+    ansible.builtin.debug:
+      var: gitlab_config_status
+
+  - name: Assert the gitlab.rb syntax is ok
+    ansible.builtin.assert:
+      that: gitlab_config_status.stdout == "Syntax OK"
+
+...

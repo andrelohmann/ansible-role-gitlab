@@ -1,4 +1,6 @@
 ---
-- name: gitlab reconfigure
-  command: gitlab-ctl reconfigure
+- name: Gitlab reconfigure
+  ansible.builtin.command: gitlab-ctl reconfigure
+  when: gitlab_run_reconfigure
+  changed_when: false
 ...

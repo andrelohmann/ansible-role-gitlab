@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    gitlab_release: latest
+    gitlab_ee: true
+    gitlab_initial_root_password: PassW0rd.247!
+    gitlab_run_reconfigure: false
+    gitlab_config:
+    # set the URL
+    - namespace: external_url
+      value: "'http://localhost'"
+    # Enable the docker registry
+    - namespace: registry
+      key: enable
+      value: "false"
+  tasks:
+  - name: "Include andrelohmann.gitlab"
+    include_role:
+      name: "andrelohmann.gitlab"
+...

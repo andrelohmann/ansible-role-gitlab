@@ -1,0 +1,39 @@
+---
+
+- name: Set namespace only configs
+  ansible.builtin.lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: '^{{ item.namespace }} '
+    insertbefore: "^# {{ item.namespace }} "
+    line: "{{ item.namespace }} {{ item.value }}"
+  notify: Gitlab reconfigure
+  when: item.namespace is defined and item.key is not defined and item.value is defined
+
+- name: Set namespaced configs
+  ansible.builtin.lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^{{ item.namespace }}\\['{{ item.key }}'\\] ="
+    insertbefore: "^# {{ item.namespace }}\\['{{ item.key }}'\\] ="
+    line: "{{ item.namespace }}['{{ item.key }}'] = {{ item.value }}"
+  notify: Gitlab reconfigure
+  when: item.namespace is defined and item.key is defined and item.value is defined
+
+- name: Set namespaced block configs
+  ansible.builtin.blockinfile:
+    path: /etc/gitlab/gitlab.rb
+    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertbefore: "^# {{ item.namespace }}\\['{{ item.key }}'\\] ="
+    block: "{{ item.block }}"
+  notify: Gitlab reconfigure
+  when: item.namespace is defined and item.key is defined and item.block is defined
+
+- name: Set regexp block configs
+  ansible.builtin.blockinfile:
+    path: /etc/gitlab/gitlab.rb
+    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertbefore: "{{ item.regexp }}"
+    block: "{{ item.block }}"
+  notify: Gitlab reconfigure
+  when: item.regexp is defined and item.block is defined
+
+...
