@@ -23,11 +23,12 @@
     ansible.builtin.shell: ruby -c /etc/gitlab/gitlab.rb
     register: gitlab_config_status
 
-  - name: dump postgresql service
+  - name: Dump gitlab config status
     ansible.builtin.debug:
       var: gitlab_config_status
 
   - name: Assert the gitlab.rb syntax is ok
     ansible.builtin.assert:
       that: gitlab_config_status.stdout == "Syntax OK"
+
 ...

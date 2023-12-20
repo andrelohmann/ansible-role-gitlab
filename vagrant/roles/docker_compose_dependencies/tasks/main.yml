@@ -13,16 +13,25 @@
     - docker.io
     - docker-compose
 
+- name: Create docker directory
+  ansible.builtin.file:
+    path: /opt/docker
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
 - name: Copy the docker compose file
   ansible.builtin.copy:
     src: docker-compose.yml
-    dest: "/opt/docker-compose.yml"
+    dest: "/opt/docker/docker-compose.yml"
     owner: vagrant
     group: vagrant
     mode: 0644
 
 - name: start docker compose
-  ansible.builtin.shell: docker-compose -f /opt/docker-compose.yml up -d
+  ansible.builtin.shell: docker-compose -f /opt/docker/docker-compose.yml up -d
   args:
     executable: /bin/bash
+
 ...

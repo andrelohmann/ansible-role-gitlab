@@ -5,4 +5,52 @@
   args:
     executable: /bin/bash
 
+- name: Create terraform directory
+  ansible.builtin.file:
+    path: /opt/terraform
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+- name: Copy the provider file
+  ansible.builtin.copy:
+    src: provider.tf
+    dest: "/opt/terraform/provider.tf"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Copy the main file
+  ansible.builtin.copy:
+    src: main.tf
+    dest: "/opt/terraform/main.tf"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Copy the vars file
+  ansible.builtin.copy:
+    src: vars.tf
+    dest: "/opt/terraform/vars.tf"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Copy the terraform.tfvars file
+  ansible.builtin.template:
+    src: terraform.tfvars
+    dest: "/opt/terraform/terraform.tfvars"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: start docker compose
+  ansible.builtin.shell: |
+    terraform init && \
+    terraform apply -auto-approve
+  args:
+    executable: /bin/bash
+    chdir: /opt/terraform/
+
 ...

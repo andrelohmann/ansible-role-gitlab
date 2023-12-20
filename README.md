@@ -4,7 +4,7 @@
 
 ## Content
 
-Use this role to install the latest gitlab-ce/gitlab-ee omnibus package on your ubuntu server.
+Use this role to install the latest gitlab-ce/gitlab-ee omnibus package on your ubuntu server. Get some inspiration within the vagrant ansible roles on how you can use terraform for later automation of the gitlab configuration.
 
 ### Requirements
 
@@ -12,7 +12,7 @@ This role requires ubuntu
 
 ### Role Variables
 
-The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameter appearing in gitlab.rb. Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
+The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameters appearing in gitlab.rb. Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
 
     gitlab_release: latest  # e.g. 16.6.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
@@ -23,10 +23,6 @@ The default set of variables defines the gitlab installation and needs at best t
     # Set an initial root password at the first ansible run
     # Password must be 8+ chars
     # gitlab_initial_root_password: __INITIAL_ROOT_PASSWORD__
-
-    # disable the signup on the login page
-    # users can only be created by admins
-    gitlab_disable_signup: true
 
     # Set the configs for gitlab.rb
     gitlab_config: []

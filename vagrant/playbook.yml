@@ -6,6 +6,7 @@
   vars:
 
     # gitlab_release: 12.4.3-ce.0
+    gitlb_api_base_url: http://gitlab.lokal/api/v4/
     gitlab_ee: true
     gitlab_initial_root_password: P@ssW0rd.123!
     gitlab_config:
@@ -123,7 +124,7 @@
   roles:
   - andrelohmann.root_colored_prompt
   - docker_compose_dependencies
-  # - andrelohmann.terraform
+  - andrelohmann.terraform
   - ansible-role-gitlab
   - gitlab_configuration
 
