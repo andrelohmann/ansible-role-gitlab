@@ -1,9 +1,11 @@
 ---
 
 - name: Add gitlab-ee key
-  ansible.builtin.apt_key:
+  ansible.builtin.get_url:
     url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
-    state: present
+    dest: /etc/apt/trusted.gpg.d/gitlab-ee.asc
+    mode: '0644'
+    force: true
 
 - name: Add gitlab-ee repo
   ansible.builtin.apt_repository:

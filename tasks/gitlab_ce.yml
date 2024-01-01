@@ -1,9 +1,11 @@
 ---
 
 - name: Add gitlab-ce key
-  ansible.builtin.apt_key:
+  ansible.builtin.get_url:
     url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
-    state: present
+    dest: /etc/apt/trusted.gpg.d/gitlab-ce.asc
+    mode: '0644'
+    force: true
 
 - name: Add gitlab-ce repo
   ansible.builtin.apt_repository:
