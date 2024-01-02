@@ -14,7 +14,7 @@ This role requires ubuntu
 
 The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameters appearing in gitlab.rb. Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
 
-    gitlab_release: latest  # e.g. 16.6.0-ce.0
+    gitlab_release: latest  # e.g. 16.7.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
     # Run reconfigure as installation step
@@ -158,7 +158,7 @@ This repository supports the following features for the role development:
 * auto version-up
 * update ansible-galaxy
 * show build status
-* test within vagrant (for development purose)
+* test within vagrant (for development purpose)
 * test with molecule (inside or outside vagrant)
 * test against docker container
 * test and develop inside vscode
@@ -167,7 +167,7 @@ This repository supports the following features for the role development:
 
 https://thedatabaseme.de/2022/01/17/automated-testing-your-ansible-role-with-molecule-and-github-actions/
 
-* Virtualbox + Vagrant installed (only necessary, if the role should be tested with vargant as well)
+* Virtualbox + Vagrant installed (only necessary, if the role should be tested with vagrant as well)
 * Docker Desktop
 * VisualStudioCode + remote extensionpack (dependencies are defined within .vscode/extensions.json)
 
@@ -175,7 +175,7 @@ https://thedatabaseme.de/2022/01/17/automated-testing-your-ansible-role-with-mol
 
 This ansible role is developed using molecule for testing. It's development is based on visual studio code and a regarding development container, solving all dependencies in terms of necessary tools (ansible, linter, molecule).
 
-The role will be tested on three ubuntu containers (bionic, focal, jammy).
+The role will be tested on two ubuntu containers (focal, jammy).
 
 To startup the molecule test containers from within the development container, the docker socket needs to be bind mounted into the development container.
 
@@ -248,8 +248,8 @@ The release management requires a handful of settings.
 #### Protecting the master/main branch
 
 * Settings -> Branches -> Add branch protection rule
-* Branch pattern name -> main or mster (depending on your default branch)
-* Protect matching branches -> chek "Require a pull request before merging"
+* Branch pattern name -> main or master (depending on your default branch)
+* Protect matching branches -> check "Require a pull request before merging"
 * "Require approvals" can be individually handled as required
 
 #### Give read and write permissions to GITHUB_TOKEN
@@ -301,7 +301,7 @@ MIT
 
 ## Author Information
 
-&copy; Andre Lohmann (and others) 2023
+&copy; Andre Lohmann (and others) 2024
 
 https://github.com/andrelohmann
 

@@ -1,5 +1,6 @@
 ---
-gitlab_release: latest  # e.g. 16.6.0-ce.0
+
+gitlab_release: latest  # e.g. 16.7.0-ce.0
 gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
 # Run reconfigure as installation step
@@ -115,4 +116,5 @@ gitlab_config: []
 #     SMTPServer: "localhost"
 #     SMTPPort: "25"
 # gitlab_mattermost_backup_dir: /var/archives/mattermost
+
 ...
