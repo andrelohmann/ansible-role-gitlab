@@ -4,9 +4,9 @@ Test your role with vagrant
 
 ## Prerequisites
 
-  * Virtualbox is installed
-  * Vagrant is installed
-  * vagrant up will install vagrant-hostmanager module
+* Virtualbox is installed
+* Vagrant is installed
+* vagrant up will install vagrant-hostmanager module
 
 ## Test process
 
@@ -29,8 +29,8 @@ molecule test
 
 You can test the several domains:
 
-  * http://gitlab.lokal
-  * http://chat.lokal
+* http://gitlab.lokal
+* http://chat.lokal
 
 Use the following credentials for the first gitlab login:
 
