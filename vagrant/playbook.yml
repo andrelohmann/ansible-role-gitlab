@@ -42,7 +42,7 @@
     # Set external redis
     - namespace: redis
       key: enable
-      value: "'false'"
+      value: "false"
     - namespace: gitlab_rails
       key: redis_host
       value: "'localhost'"
@@ -56,7 +56,7 @@
     # Set external postgres
     - namespace: postgresql
       key: enable
-      value: "'false'"
+      value: "false"
     - namespace: gitlab_rails
       key: db_adapter
       value: "'postgresql'"

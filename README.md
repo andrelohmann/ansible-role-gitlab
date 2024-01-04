@@ -1,4 +1,4 @@
-# gitlab
+"false"# gitlab
 
 ![Last test](https://github.com/andrelohmann/ansible-role-gitlab/actions/workflows/test.yml/badge.svg)
 
@@ -55,7 +55,7 @@ The default set of variables defines the gitlab installation and needs at best t
     # Set external redis
     # - namespace: redis
     #   key: enable
-    #   value: "'false'"
+    #   value: "false"
     # - namespace: gitlab_rails
     #   key: redis_host
     #   value: "'localhost'"
@@ -68,7 +68,7 @@ The default set of variables defines the gitlab installation and needs at best t
     # Set external postgres
     # - namespace: postgresql
     #   key: enable
-    #   value: "'false'"
+    #   value: "false"
     # - namespace: gitlab_rails
     #   key: db_adapter
     #   value: "'postgresql'"
