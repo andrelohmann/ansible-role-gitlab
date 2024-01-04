@@ -92,7 +92,8 @@ gitlab_config: []
 #   key: backup_upload_remote_directory
 #   value: "'__backup_upload_remote_directory__'"
 # Set the repositories data dir
-# - regexp: "^# git_data_dirs"
+# - namespace: git_data_dirs
+#   regexp: "^# git_data_dirs"
 #   block: |
 #     git_data_dirs({
 #       "default" => {

@@ -12,7 +12,7 @@ This role requires ubuntu
 
 ### Role Variables
 
-The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameters appearing in gitlab.rb. Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
+The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameters appearing in gitlab.rb (four different styles in total). Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
 
     gitlab_release: latest  # e.g. 16.7.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
@@ -106,7 +106,8 @@ The default set of variables defines the gitlab installation and needs at best t
     #   key: backup_upload_remote_directory
     #   value: "'__backup_upload_remote_directory__'"
     # Set the repositories data dir
-    # - regexp: "^# git_data_dirs"
+    # - namespace: git_data_dirs
+    #   regexp: "^# git_data_dirs"
     #   block: |
     #     git_data_dirs({
     #       "default" => {

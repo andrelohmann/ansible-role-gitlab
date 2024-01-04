@@ -21,7 +21,7 @@
 - name: Set namespaced block configs
   ansible.builtin.blockinfile:
     path: /etc/gitlab/gitlab.rb
-    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK {{ item.namespace }} {{ item.key }} -->"
     insertbefore: "^# {{ item.namespace }}\\['{{ item.key }}'\\] ="
     block: "{{ item.block }}"
   notify: Gitlab reconfigure
@@ -30,10 +30,10 @@
 - name: Set regexp block configs
   ansible.builtin.blockinfile:
     path: /etc/gitlab/gitlab.rb
-    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    marker: "# <!-- {mark} ANSIBLE MANAGED BLOCK {{ item.namespace }} -->"
     insertbefore: "{{ item.regexp }}"
     block: "{{ item.block }}"
   notify: Gitlab reconfigure
-  when: item.regexp is defined and item.block is defined
+  when: item.regexp is defined and item.block is defined and item.namespace is defined
 
 ...
