@@ -105,14 +105,14 @@
     # Enable backups to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: backup_upload_connection
-      block: |
+      block: >-
         gitlab_rails['backup_upload_connection'] = {
           'provider' => 'AWS',
           # region us-east-1 required for minio
           'region' => 'us-east-1',
           'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
           'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
-          'endpoint' => 'http://localhost:9000',
+          'endpoint' => 'http://gitlab.lokal:9000',
           # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
           'use_iam_profile' => false
         }
