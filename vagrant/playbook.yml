@@ -124,8 +124,8 @@
   roles:
   - andrelohmann.root_colored_prompt
   - docker_compose_dependencies
-  - andrelohmann.terraform
-  - ansible-role-gitlab
-  - gitlab_configuration
+  #- andrelohmann.terraform
+  #- ansible-role-gitlab
+  #- gitlab_configuration
 
 ...

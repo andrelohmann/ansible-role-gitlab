@@ -4,6 +4,7 @@ roles:
 - andrelohmann.root_colored_prompt
 - andrelohmann.terraform
 
-collections: []
+collections:
+- community.docker
 
 ...

@@ -45,7 +45,7 @@
     group: vagrant
     mode: 0644
 
-- name: start docker compose
+- name: Run terraform
   ansible.builtin.shell: |
     terraform init && \
     terraform apply -auto-approve
