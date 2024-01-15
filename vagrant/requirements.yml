@@ -2,9 +2,11 @@
 
 roles:
 - andrelohmann.root_colored_prompt
+- andrelohmann.postgresql
 - andrelohmann.terraform
 
 collections:
+- community.postgresql
 - community.docker
 
 ...

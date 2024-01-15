@@ -3,6 +3,14 @@
 gitlab_release: latest  # e.g. 16.7.0-ce.0
 gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
+# If an external postgresql database is used,
+# install psql and pg_dump reflecting the correct version
+# and set the command paths regardingly
+# gitlab_postgresql_psql_path: /usr/bin/psql
+# gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+gitlab_postgresql_psql_path: false
+gitlab_postgresql_pg_dump_path: false
+
 # Run reconfigure as installation step
 gitlab_run_reconfigure: true
 

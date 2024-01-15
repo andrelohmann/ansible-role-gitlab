@@ -30,11 +30,6 @@
     group: vagrant
     mode: 0644
 
-#- name: start docker compose
-#  ansible.builtin.shell: docker-compose -f /opt/docker/docker-compose.yml up -d
-#  args:
-#    executable: /bin/bash
-
 - name: Create and start services
   community.docker.docker_compose:
     project_src: /opt/docker

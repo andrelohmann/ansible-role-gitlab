@@ -17,6 +17,11 @@ The default set of variables defines the gitlab installation and needs at best t
     gitlab_release: latest  # e.g. 16.7.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
+    # If you are relying on an external postgres database
+    # pg_dump and psql need to be installed with the reflecting version number
+    # gitlab_postgresql_psql_path: /usr/bin/psql
+    # gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+
     # Run reconfigure as installation step
     gitlab_run_reconfigure: true
 

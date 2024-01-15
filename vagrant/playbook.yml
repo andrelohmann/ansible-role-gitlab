@@ -20,6 +20,14 @@
     dependencies_minio_accesskey: 43D9EPVMO0QGJ38GXTDO
     dependencies_minio_secretkey: NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
 
+    # Install postgresql Client to reflect the version
+    # of the external postgresql database
+    postgresql_version: 16
+    postgresql_clients_only: true
+
+    gitlab_postgresql_psql_path: /usr/bin/psql
+    gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+
     # gitlab_release: 16.7.3-ce.0
     gitlb_api_base_url: http://gitlab.lokal/api/v4/
     gitlab_ee: true
@@ -140,6 +148,7 @@
 
   roles:
   - andrelohmann.root_colored_prompt
+  - andrelohmann.postgresql
   - docker_compose_dependencies
   - andrelohmann.terraform
   - ansible-role-gitlab

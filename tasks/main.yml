@@ -46,6 +46,24 @@
   ansible.builtin.pause:
     seconds: 60
 
+- name: Set psql symlink
+  ansible.builtin.file:
+    src: "{{ gitlab_postgresql_psql_path }}"
+    dest: /opt/gitlab/bin/psql
+    owner: root
+    group: root
+    state: link
+  when: gitlab_postgresql_psql_path
+
+- name: Set pg_dump symlink
+  ansible.builtin.file:
+    src: "{{ gitlab_postgresql_pg_dump_path }}"
+    dest: /opt/gitlab/bin/pg_dump
+    owner: root
+    group: root
+    state: link
+  when: gitlab_postgresql_pg_dump_path
+
 - name: Restart gitlab
   ansible.builtin.command: gitlab-ctl restart
   when: gitlab_run_reconfigure
