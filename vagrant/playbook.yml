@@ -5,7 +5,22 @@
 
   vars:
 
-    # gitlab_release: 16.7.-ce.0
+    # Set access credentials for dependency containers
+    # These are applied in role docker_compose_dependencies
+    # Postgres DB
+    dependencies_postgres_db: gitlabdb
+    dependencies_postgres_user: gitlab
+    dependencies_postgres_passwd: gitlab_secret
+    # Redis
+    dependencies_redis_secret: r3dis.S3cr3t
+    # Minio S3 API
+    dependencies_minio_rootuser: minioroot
+    dependencies_minio_rootpasswd: miniorootpw
+    # AK / SK for the bucket access user
+    dependencies_minio_accesskey: 43D9EPVMO0QGJ38GXTDO
+    dependencies_minio_secretkey: NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
+
+    # gitlab_release: 16.7.3-ce.0
     gitlb_api_base_url: http://gitlab.lokal/api/v4/
     gitlab_ee: true
     gitlab_initial_root_password: P@ssW0rd.123!
@@ -25,10 +40,10 @@
     # Set the mailpit catch all data
     - namespace: gitlab_rails
       key: gitlab_email_from
-      value: "'gitlab@example.com'"
+      value: "'gitlab@gitlab.lokal'"
     - namespace: gitlab_rails
       key: gitlab_email_reply_to
-      value: "'gitlab@example.com'"
+      value: "'gitlab@gitlab.lokal'"
     - namespace: gitlab_rails
       key: smtp_enable
       value: "true"
@@ -51,7 +66,7 @@
       value: "6379"
     - namespace: gitlab_rails
       key: redis_password
-      value: "'r3dis.S3cr3t'"
+      value: "'{{ dependencies_redis_secret }}'"
 
     # Set external postgres
     - namespace: postgresql
@@ -71,29 +86,31 @@
       value: "5432"
     - namespace: gitlab_rails
       key: db_database
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_db }}'"
     - namespace: gitlab_rails
       key: db_username
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_user }}'"
     - namespace: gitlab_rails
       key: db_password
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_passwd }}'"
 
-    # Enable backups to S3
-    # - namespace: gitlab_rails
-    #   key: backup_upload_connection
-    #   block: |
-    #     gitlab_rails['backup_upload_connection'] = {
-    #       'provider' => 'AWS',
-    #       'region' => 'eu-central-1',
-    #       'aws_access_key_id' => 'XXXXXXX',
-    #       'aws_secret_access_key' => 'XXXXXXX',
-    #       # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
-    #       'use_iam_profile' => false
-    #     }
-    # - namespace: gitlab_rails
-    #   key: backup_upload_remote_directory
-    #   value: "'__your_backup_upload_remote_directory__'"
+    # Enable backups to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: backup_upload_connection
+      block: |
+        gitlab_rails['backup_upload_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => 'us-east-1',
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => 'http://localhost:9000',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+    - namespace: gitlab_rails
+      key: backup_upload_remote_directory
+      value: "'gitlab-backup'"
     # Set the repositories data dir
     # - regexp: "^# git_data_dirs"
     #   block: |
@@ -124,8 +141,8 @@
   roles:
   - andrelohmann.root_colored_prompt
   - docker_compose_dependencies
-  #- andrelohmann.terraform
-  #- ansible-role-gitlab
-  #- gitlab_configuration
+  - andrelohmann.terraform
+  - ansible-role-gitlab
+  - gitlab_configuration
 
 ...

@@ -23,7 +23,7 @@
     mode: '0755'
 
 - name: Copy the docker compose file
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: docker-compose.yml
     dest: "/opt/docker/docker-compose.yml"
     owner: vagrant
@@ -113,7 +113,7 @@
     chdir: /opt/docker/
 
 - name: Create AK / SK
-  ansible.builtin.shell: mc admin user svcacct add myminio gitlab1
+  ansible.builtin.shell: "mc admin user svcacct add --access-key \"{{ dependencies_minio_accesskey }}\" --secret-key \"{{ dependencies_minio_secretkey }}\" myminio gitlab1"
   args:
     executable: /bin/bash
     chdir: /opt/docker/
