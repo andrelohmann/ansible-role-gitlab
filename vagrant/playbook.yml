@@ -19,6 +19,8 @@
     # AK / SK for the bucket access user
     dependencies_minio_accesskey: 43D9EPVMO0QGJ38GXTDO
     dependencies_minio_secretkey: NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
+    dependencies_minio_endpoint: http://localhost:9000
+    dependencies_minio_region: us-east-1
 
     # Install postgresql Client to reflect the version
     # of the external postgresql database
@@ -104,22 +106,239 @@
 
     # Enable backups to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
+      key: backup_upload_remote_directory
+      value: "'gitlab-backup'"
+    - namespace: gitlab_rails
       key: backup_upload_connection
       block: >-
         gitlab_rails['backup_upload_connection'] = {
-            'provider' => 'AWS',
-            # region us-east-1 required for minio
-            'region' => 'us-east-1',
-            'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
-            'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
-            'endpoint' => 'http://gitlab.lokal:9000',
-            # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
-            'use_iam_profile' => false
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
         }
+    
+    # Enable artifacts to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
-      key: backup_upload_remote_directory
-      value: "'gitlab-backup'"
+      key: artifacts_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_remote_directory
+      value: "'gitlab-artifacts'"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_connection
+      block: >-
+        gitlab_rails['artifacts_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Enable mr diffs to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: external_diffs_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_remote_directory
+      value: "'gitlab-mrdiffs'"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_connection
+      block: >-
+        gitlab_rails['external_diffs_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+    
+    # Enable lfs to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: lfs_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: lfs_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: lfs_object_store_remote_directory
+      value: "'gitlab-lfs'"
+    - namespace: gitlab_rails
+      key: lfs_object_store_connection
+      block: >-
+        gitlab_rails['lfs_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Enable uploads to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: uploads_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: uploads_object_store_remote_directory
+      value: "'gitlab-uploads'"
+    - namespace: gitlab_rails
+      key: uploads_object_store_connection
+      block: >-
+        gitlab_rails['uploads_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Enable terraform state to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: terraform_state_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_remote_directory
+      value: "'gitlab-terraform'"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_connection
+      block: >-
+        gitlab_rails['terraform_state_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+    
+    # Enable Secure Files to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: ci_secure_files_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_remote_directory
+      value: "'gitlab-secure-files'"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_connection
+      block: >-
+        gitlab_rails['ci_secure_files_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+    
+    # Enable packages to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: packages_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: packages_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: packages_object_store_remote_directory
+      value: "'gitlab-packages'"
+    - namespace: gitlab_rails
+      key: packages_object_store_connection
+      block: >-
+        gitlab_rails['packages_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+    
+    # Enable dependency proxy to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: dependency_proxy_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_remote_directory
+      value: "'gitlab-dependency-proxy'"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_connection
+      block: >-
+        gitlab_rails['dependency_proxy_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Enable registry to S3 -> S3 simulated with local minio container
+    - namespace: registry
+      key: storage
+      block: >-
+        registry['storage'] = {
+          's3' => {
+            'accesskey' => '{{ dependencies_minio_accesskey }}',
+            'secretkey' => '{{ dependencies_minio_secretkey }}',
+            'bucket' => 'gitlab-registry',
+            'region' => '{{ dependencies_minio_region }}',
+            'regionendpoint' => '{{ dependencies_minio_endpoint }}',
+            'pathstyle' => true
+          }
+        }
+
     # Set the repositories data dir
+    # ATTENTION - this is a depricated config
+    # Use gitaly['configuration'] instead
+    # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
     # - regexp: "^# git_data_dirs"
     #   block: |
     #     git_data_dirs({
@@ -127,6 +346,17 @@
     #         "path" => "/var/opt/gitlab/git-data"
     #       }
     #     })
+    - namespace: gitaly
+      key: configuration
+      block: >-
+        gitaly['configuration'] = {
+          storage: [
+            {
+              name: 'default',
+              path: '/vagrant/repositories',
+            }
+          ]
+        }
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:
     #   TeamSettings:

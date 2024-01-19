@@ -7,8 +7,8 @@ resource "gitlab_application_settings" "localrequests" {
   allow_local_requests_from_system_hooks = true
   allow_local_requests_from_web_hooks_and_services = true
   outbound_local_requests_whitelist = [
-    "localhost"
-    "127.0.0.1"
+    "localhost",
+    "127.0.0.1",
     "gitlab.lokal"
   ]
 }

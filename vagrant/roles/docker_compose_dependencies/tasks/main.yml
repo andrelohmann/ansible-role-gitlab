@@ -77,11 +77,15 @@
     chdir: /opt/docker/
   with_items:
   - gitlab-backup
-  - gitlab-registry
   - gitlab-artifacts
-  - gitlab-uploads
-  - gitlab-lfs
   - gitlab-mrdiffs
+  - gitlab-lfs
+  - gitlab-uploads
+  - gitlab-terraform
+  - gitlab-secure-files
+  - gitlab-packages
+  - gitlab-dependency-proxy
+  - gitlab-registry
 
 - name: Create the gitlab buckets policy
   ansible.builtin.shell: mc admin policy create myminio gitlab-buckets gitlab-buckets.json

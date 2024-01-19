@@ -111,6 +111,10 @@ The default set of variables defines the gitlab installation and needs at best t
     #   key: backup_upload_remote_directory
     #   value: "'__backup_upload_remote_directory__'"
     # Set the repositories data dir
+    # Set the repositories data dir
+    # ATTENTION - this is a depricated config
+    # Use gitaly['configuration'] instead
+    # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
     # - namespace: git_data_dirs
     #   regexp: "^# git_data_dirs"
     #   block: |

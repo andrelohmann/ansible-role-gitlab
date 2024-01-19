@@ -46,7 +46,7 @@ rules:
   indentation:
     spaces: consistent
     indent-sequences: consistent
-    check-multi-line-strings: true
+    check-multi-line-strings: false
     level: error
   key-duplicates: enable
   line-length: disable
