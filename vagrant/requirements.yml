@@ -4,6 +4,7 @@ roles:
 - andrelohmann.root_colored_prompt
 - andrelohmann.postgresql
 - andrelohmann.terraform
+- andrelohmann.golang
 
 collections:
 - community.postgresql

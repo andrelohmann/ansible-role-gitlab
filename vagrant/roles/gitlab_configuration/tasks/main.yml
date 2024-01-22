@@ -61,7 +61,7 @@
 
 - name: Initialize terraform
   ansible.builtin.shell: |
-    terraform init
+    terraform init -no-color
   args:
     executable: /bin/bash
     #chdir: /opt/terraform/
@@ -69,17 +69,17 @@
 
 - name: Plan terraform
   ansible.builtin.shell: |
-    terraform plan
+    terraform plan -no-color
   args:
     executable: /bin/bash
     #chdir: /opt/terraform/
     chdir: /vagrant/terraform/
 
-# - name: Run terraform
-#   ansible.builtin.shell: |
-#     terraform apply -auto-approve
-#   args:
-#     executable: /bin/bash
-#     chdir: /opt/terraform/
+- name: Run terraform
+  ansible.builtin.shell: |
+    terraform apply -auto-approve
+  args:
+    executable: /bin/bash
+    chdir: /opt/terraform/
 
 ...
