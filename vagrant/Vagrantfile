@@ -36,6 +36,7 @@ Vagrant.configure(2) do |config|
     b.vm.synced_folder ".", "/vagrant/ansible_vagrant", create: true, owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=775"]
     b.vm.synced_folder "../.", "/etc/ansible/roles/#{vagrant_config['role_name']}", create: true, owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=775"]
     b.vm.synced_folder "./repositories", "/vagrant/repositories", create: true, owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=775"]
+    b.vm.synced_folder "./terraform", "/vagrant/terraform", create: true, owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=775"]
 
     # auto update guest additions
     b.vbguest.auto_update = true

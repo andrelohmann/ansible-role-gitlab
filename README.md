@@ -1,4 +1,4 @@
-"false"# gitlab
+# gitlab
 
 ![Last test](https://github.com/andrelohmann/ansible-role-gitlab/actions/workflows/test.yml/badge.svg)
 
