@@ -111,18 +111,19 @@ The default set of variables defines the gitlab installation and needs at best t
     #   key: backup_upload_remote_directory
     #   value: "'__backup_upload_remote_directory__'"
     # Set the repositories data dir
-    # Set the repositories data dir
-    # ATTENTION - this is a depricated config
-    # Use gitaly['configuration'] instead
     # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
-    # - namespace: git_data_dirs
-    #   regexp: "^# git_data_dirs"
-    #   block: |
-    #     git_data_dirs({
-    #       "default" => {
-    #         "path" => "/var/opt/gitlab/git-data"
-    #       }
-    #     })
+    # - namespace: gitaly
+    #   key: configuration
+    #   block: >-
+    #     gitaly['configuration'] = {
+    #       storage: [
+    #         {
+    #           name: 'default',
+    #           path: '/your/repositories/mount/path',
+    #         }
+    #       ]
+    #     }
+
     # Install and configure mattermost
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:

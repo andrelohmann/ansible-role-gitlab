@@ -1,5 +1,5 @@
 ---
-- name: Install dependencies packages
+- name: Apt | Install dependencies packages
   ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
@@ -18,23 +18,23 @@
     - gpg
     - expect
 
-- name: Install gitlab-ce
+- name: Include | Install gitlab-ce
   ansible.builtin.include_tasks: gitlab_ce.yml
   when: not gitlab_ee
 
-- name: Install gitlab-ee
+- name: Include | Install gitlab-ee
   ansible.builtin.include_tasks: gitlab_ee.yml
   when: gitlab_ee
 
-- name: Configure gitlab.rb
+- name: Include | Configure gitlab.rb
   ansible.builtin.include_tasks: gitlab_config.yml
   loop: "{{ gitlab_config }}"
 
-- name: Set initial root password
+- name: Include | Set initial root password
   ansible.builtin.include_tasks: initial_root_password.yml
   when: gitlab_initial_root_password is defined
 
-- name: Setup mattermost
+- name: Include | Setup mattermost
   ansible.builtin.include_tasks: mattermost.yml
   when: gitlab_mattermost_external_url is defined
 
@@ -42,11 +42,11 @@
   ansible.builtin.meta: flush_handlers
 
 # Pause for 60 seconds to let unicorn restart
-- name: Wait for 60 seconds
+- name: Pause | Wait for 60 seconds
   ansible.builtin.pause:
     seconds: 60
 
-- name: Set psql symlink
+- name: Postgres CLI | Set psql symlink
   ansible.builtin.file:
     src: "{{ gitlab_postgresql_psql_path }}"
     dest: /opt/gitlab/bin/psql
@@ -55,7 +55,7 @@
     state: link
   when: gitlab_postgresql_psql_path
 
-- name: Set pg_dump symlink
+- name: Postgres CLI | Set pg_dump symlink
   ansible.builtin.file:
     src: "{{ gitlab_postgresql_pg_dump_path }}"
     dest: /opt/gitlab/bin/pg_dump

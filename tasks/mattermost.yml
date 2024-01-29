@@ -1,6 +1,6 @@
 ---
 
-- name: Add mattermost backup script
+- name: Mattermost | Add mattermost backup script
   ansible.builtin.template:
     src: mattermost-backup.sh.j2
     dest: /etc/mattermost-backup.sh
@@ -9,7 +9,7 @@
     mode: 0700
   when: gitlab_mattermost_backup_dir is defined
 
-- name: Create mattermost backup dir
+- name: Mattermost | Create mattermost backup dir
   ansible.builtin.file:
     path: "{{ gitlab_mattermost_backup_dir }}"
     state: directory
@@ -18,7 +18,7 @@
     mode: 0770
   when: gitlab_mattermost_backup_dir is defined
 
-- name: Enable mattermost
+- name: Mattermost | Enable mattermost
   ansible.builtin.lineinfile:
     path: /etc/gitlab/gitlab.rb
     regexp: "^mattermost\\['enable'\\] ="
@@ -26,26 +26,26 @@
     line: "mattermost['enable'] = true"
   notify: Gitlab reconfigure
 
-- name: Set mattermost_external_url
+- name: Mattermost | Set mattermost_external_url
   ansible.builtin.lineinfile:
     path: /etc/gitlab/gitlab.rb
     regexp: 'mattermost_external_url '
     line: "mattermost_external_url '{{ gitlab_mattermost_external_url }}'"
   notify: Gitlab reconfigure
 
-- name: Flush the gitlab reconfigure handler before manipulation the mattermost config
+- name: Mattermost | Flush the gitlab reconfigure handler before manipulation the mattermost config
   ansible.builtin.meta: flush_handlers
 
-- name: Read Mattermost JSON file
+- name: Mattermost | Read Mattermost JSON file
   ansible.builtin.command: cat /var/opt/gitlab/mattermost/config.json
   register: _mattermost_json
   changed_when: false
 
-- name: Alternate the mattermost json
+- name: Mattermost | Alternate the mattermost json
   ansible.builtin.set_fact:
     mattermost_json: "{{ (_mattermost_json.stdout | from_json) | combine(gitlab_mattermost_additional_configs, recursive=True) }}"
 
-- name: Write back to object
+- name: Mattermost | Write back to object
   ansible.builtin.copy:
     content: "{{ mattermost_json | to_nice_json }}"
     dest: /var/opt/gitlab/mattermost/config.json
