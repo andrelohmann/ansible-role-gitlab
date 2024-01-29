@@ -25,12 +25,13 @@ cd /etc/ansible/roles/ansible-role-gitlab
 molecule test
 ```
 
-### Test the installation
+### Test cases
 
-You can test the several domains:
+#### Gitlab
+
+You can test the gitlab uner the following url:
 
 * http://gitlab.lokal
-* http://chat.lokal
 
 Use the following credentials for the first gitlab login:
 
@@ -39,21 +40,72 @@ Username: root
 Password: P@ssW0rd.123!
 ```
 
-### Access the dependency services
+#### Mattermost
 
-#### mailpit
+If you want to check the mattermost installation, you need to uncomment the mattermost block in the playbook yaml.
 
-Mailpit will act as a catch-all email server, that offers a UI, to view incoming emails.
+* http://chat.lokal
+
+#### Mailpit
+
+Mailpit will act as a catch-all email server, that offers a UI, to view incoming emails (e.g. password reset).
 
 * http://gitlab.lokal:8025
 
-#### redis commander
+#### External redis
 
-redis commander offers a UI, to manage your redis content.
+If you want to test the gitlab deployment against an external instance of redis instead of relying on the omnibus package,
+you need to set the variable
+
+    gitlab_use_external_redis: true
+
+in the playbook.yml
+
+To activate redis commander for a graphical way to access the redis data,
+you need to set the variable
+
+    activate_redis_commander: true
+
+in the playbook.yml
 
 * http://gitlab.lokal:8081
 
-#### minio
+#### External postgresql
+
+If you want to test the gitlab deployment against an external instance of postgresql instead of relying on the omnibus package,
+you need to set or uncomment the following variables
+
+    gitlab_use_external_postgresql: true
+    gitlab_postgresql_psql_path: /usr/bin/psql
+    gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+
+in the playbook.yml as well as the andrelohmann.postgresql role
+
+To activate pgAdmin4 for a graphical way to access the postgresql data,
+you need to set the variable
+
+    activate_pgadmin: true
+
+in the playbook.yml
+
+* http://gitlab.lokal:8888
+
+```
+Email: admin@gitlab.lokal
+Password: admin
+```
+
+Create new server -> set the name (e.g. gitlab)
+
+Tab Connection
+
+* Host: localhost
+* Port: 5432
+* Maintenance Database: postgres
+* Username: gitlab
+* Password: gitlab_secret
+
+#### Minio
 
 Minio offers a S3 compatible API and a Web UI for the management.
 
@@ -77,23 +129,19 @@ Test the backup command from within the vagrant machine
 sudo gitlab-backup create
 ```
 
-#### pgadmin
 
-pgAdmin4 allows to access the the postgres database.
+## Test cases
 
-* http://gitlab.lokal:8888
+The vagrant machine allows a bunch of testcases.
 
-```
-Email: admin@gitlab.lokal
-Password: admin
-```
+### Buckets and repository folders
 
-Create new server -> set the name (e.g. gitlab)
+Configure gitlab to store repositories and other persistent data at specified locations.
 
-Tab Connection
+#### Prerequisites
 
-* Host: localhost
-* Port: 5432
-* Maintenance Database: postgres
-* Username: gitlab
-* Password: gitlab_secret
+* uncomment minio in vagrant/roles/docker_compose_dependecies/templates/docker-compose.yml
+* uncomment all Minio tasks in vagrant/roles/docker_compose_dependecies/tasks/main.yml
+* uncomment all Bucket sections and the Gitaly section of the gitlab_config variable in vagrant/playbook.yml
+
+#### Tests

@@ -1,6 +1,6 @@
 ---
 
-- name: install packages
+- name: Docker | Install packages
   ansible.builtin.apt:
     name: "{{ packages }}"
     state: latest
@@ -11,10 +11,9 @@
     cache_valid_time: 3600
   vars:
     packages:
-    - docker.io
-    - docker-compose
+    - python3-docker
 
-- name: Create docker directory
+- name: Docker | Create docker directory
   ansible.builtin.file:
     path: /opt/docker
     state: directory
@@ -22,7 +21,7 @@
     group: vagrant
     mode: '0755'
 
-- name: Copy the docker compose file
+- name: Docker | Copy the docker compose file
   ansible.builtin.template:
     src: docker-compose.yml
     dest: "/opt/docker/docker-compose.yml"
@@ -30,96 +29,98 @@
     group: vagrant
     mode: 0644
 
-- name: Create and start services
-  community.docker.docker_compose:
+- name: Docker | Create and start services
+  community.docker.docker_compose_v2:
     project_src: /opt/docker
-    files:
-    - docker-compose.yml
     state: present
   register: output
 
-- name: Dump output
+- name: Docker | Dump output
   ansible.builtin.debug:
     var: output
 
-- name: Verify that minio service is running
-  ansible.builtin.assert:
-    that:
-    - "output.services.minio.docker_minio_1.state.running"
+- name: Minio | Setup Minio for gitlab s3 simulation
+  when: gitlab_use_buckets
+  block:
 
-- name: Copy the gitlab bucket policy
-  ansible.builtin.copy:
-    src: gitlab-buckets.json
-    dest: "/opt/docker/gitlab-buckets.json"
-    owner: vagrant
-    group: vagrant
-    mode: 0644
+  - name: Minio | Verify that minio service is running
+    ansible.builtin.assert:
+      that:
+      - "output.services.minio.docker_minio_1.state.running"
 
-- name: Download minio cli
-  ansible.builtin.get_url:
-    url: https://dl.min.io/client/mc/release/linux-amd64/mc
-    dest: /usr/local/bin/mc
-    owner: root
-    group: root
-    mode: 0755
+  - name: Minio | Copy the gitlab bucket policy
+    ansible.builtin.copy:
+      src: gitlab-buckets.json
+      dest: "/opt/docker/gitlab-buckets.json"
+      owner: vagrant
+      group: vagrant
+      mode: 0644
 
-- name: Set the mc alias "myminio"
-  # username and passwrod extracted from docker-compose file
-  ansible.builtin.shell: mc alias set myminio http://localhost:9000 minioroot miniorootpw
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
+  - name: Minio | Download minio cli
+    ansible.builtin.get_url:
+      url: https://dl.min.io/client/mc/release/linux-amd64/mc
+      dest: /usr/local/bin/mc
+      owner: root
+      group: root
+      mode: 0755
 
-- name: Create the gitlab buckets
-  ansible.builtin.shell: "mc mb myminio/{{ item }}"
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
-  with_items:
-  - gitlab-backup
-  - gitlab-artifacts
-  - gitlab-mrdiffs
-  - gitlab-lfs
-  - gitlab-uploads
-  - gitlab-terraform
-  - gitlab-secure-files
-  - gitlab-packages
-  - gitlab-dependency-proxy
-  - gitlab-registry
+  - name: Minio | Set the mc alias "myminio"
+    # username and passwrod extracted from docker-compose file
+    ansible.builtin.shell: mc alias set myminio http://localhost:9000 minioroot miniorootpw
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
 
-- name: Create the gitlab buckets policy
-  ansible.builtin.shell: mc admin policy create myminio gitlab-buckets gitlab-buckets.json
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
+  - name: Minio | Create the gitlab buckets
+    ansible.builtin.shell: "mc mb myminio/{{ item }}"
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
+    with_items:
+    - gitlab-backup
+    - gitlab-artifacts
+    - gitlab-mrdiffs
+    - gitlab-lfs
+    - gitlab-uploads
+    - gitlab-terraform
+    - gitlab-secure-files
+    - gitlab-packages
+    - gitlab-dependency-proxy
+    - gitlab-registry
 
-- name: Create the gitlab user
-  ansible.builtin.shell: mc admin user add myminio gitlab1 gitlabpw
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
+  - name: Minio | Create the gitlab buckets policy
+    ansible.builtin.shell: mc admin policy create myminio gitlab-buckets gitlab-buckets.json
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
 
-- name: Create the gitlab group and add user gitlab1
-  ansible.builtin.shell: mc admin group add myminio gitlab gitlab1
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
+  - name: Minio | Create the gitlab user
+    ansible.builtin.shell: mc admin user add myminio gitlab1 gitlabpw
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
 
-- name: Attach the gitlab buckets policy to the gitlab group
-  ansible.builtin.shell: mc admin policy attach myminio gitlab-buckets --group gitlab
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
+  - name: Minio | Create the gitlab group and add user gitlab1
+    ansible.builtin.shell: mc admin group add myminio gitlab gitlab1
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
 
-- name: Create AK / SK
-  ansible.builtin.shell: "mc admin user svcacct add --access-key \"{{ dependencies_minio_accesskey }}\" --secret-key \"{{ dependencies_minio_secretkey }}\" myminio gitlab1"
-  args:
-    executable: /bin/bash
-    chdir: /opt/docker/
-  register: minio_user
+  - name: Minio | Attach the gitlab buckets policy to the gitlab group
+    ansible.builtin.shell: mc admin policy attach myminio gitlab-buckets --group gitlab
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
 
-- name: Dump minio_user
-  ansible.builtin.debug:
-    var: minio_user
+  - name: Minio | Create AK / SK
+    ansible.builtin.shell: "mc admin user svcacct add --access-key \"{{ dependencies_minio_accesskey }}\" --secret-key \"{{ dependencies_minio_secretkey }}\" myminio gitlab1"
+    args:
+      executable: /bin/bash
+      chdir: /opt/docker/
+    register: minio_user
+
+  - name: Minio | Dump minio_user
+    ansible.builtin.debug:
+      var: minio_user
 
 ...

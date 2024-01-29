@@ -2,17 +2,14 @@
 version: '3.9'
 
 services:
-  postgresdb:
-    image: postgres
-    # image: postgres:15-alpine
+
+  mailpit:
+    image: axllent/mailpit
     ports:
-    - 5432:5432
-    environment:
-    - POSTGRES_DB={{ dependencies_postgres_db }}
-    - POSTGRES_USER={{ dependencies_postgres_user }}
-    - POSTGRES_PASSWORD={{ dependencies_postgres_passwd }}
-    volumes:
-    - pgdata:/var/lib/postgresql/data
+    - 8025:8025
+    - 1025:1025
+
+{% if gitlab_use_external_redis %}
   redis:
     image: redis:7-alpine
     volumes:
@@ -20,6 +17,7 @@ services:
     ports:
     - 6379:6379
     command: redis-server --save 60 1 --loglevel warning --requirepass {{ dependencies_redis_secret }}
+{% if activate_redis_commander %}
   redis-commander:
     # container_name: redis-commander
     # hostname: redis-commander
@@ -32,6 +30,23 @@ services:
     - "8081:8081"
     depends_on:
     - redis
+{% endif %}
+{% endif %}
+
+
+{% if gitlab_use_external_postgres %}
+  postgresdb:
+    image: postgres
+    # image: postgres:15-alpine
+    ports:
+    - 5432:5432
+    environment:
+    - POSTGRES_DB={{ dependencies_postgres_db }}
+    - POSTGRES_USER={{ dependencies_postgres_user }}
+    - POSTGRES_PASSWORD={{ dependencies_postgres_passwd }}
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+{% if activate_pgadmin %}
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -48,11 +63,10 @@ services:
     depends_on:
     - postgresdb
     - mailpit
-  mailpit:
-    image: axllent/mailpit
-    ports:
-    - 8025:8025
-    - 1025:1025
+{% endif %}
+{% endif %}
+
+{% if gitlab_use_buckets %}
   minio:
     image: quay.io/minio/minio
     command: minio server /data --console-address ":9001"
@@ -70,10 +84,15 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+{% endif %}
+
+{% if activate_pgadmin %}
   kroki:
     image: yuzutech/kroki
     ports:
     - 8000:8000
+{% endif %}
+
 # elastic:
 #   image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
 #   ports:

@@ -1,10 +1,5 @@
 ---
 
-- name: Create the access token
-  ansible.builtin.shell: "gitlab-rails runner \"token = User.find_by_username('root').personal_access_tokens.create(scopes: ['api'], name: 'API Automation token', expires_at: 365.days.from_now); token.set_token('{{ gitlab_api_access_token }}'); token.save!\""
-  args:
-    executable: /bin/bash
-
 - name: fetch latest terrafrom gitlab provider version
   ansible.builtin.shell: curl -s -o /dev/null -I -w "%{redirect_url}\n" https://github.com/gitlabhq/terraform-provider-gitlab/releases/latest | grep -oP "[0-9]+(\.[0-9]+)+$"
   args:
@@ -66,6 +61,11 @@
     executable: /bin/bash
     #chdir: /opt/terraform/
     chdir: /vagrant/terraform/
+
+# Pause for 60 seconds to let unicorn restart
+- name: Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
 
 - name: Plan terraform
   ansible.builtin.shell: |

@@ -4,6 +4,8 @@
   become_method: sudo
 
   vars:
+    docker_users:
+    - vagrant
 
     # Set access credentials for dependency containers
     # These are applied in role docker_compose_dependencies
@@ -27,8 +29,9 @@
     postgresql_version: 16
     postgresql_clients_only: true
 
-    gitlab_postgresql_psql_path: /usr/bin/psql
-    gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+    # uncomment for usage of external postgresql
+    # gitlab_postgresql_psql_path: /usr/bin/psql
+    # gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
 
     # gitlab_release: 16.7.3-ce.0
     gitlb_api_base_url: http://gitlab.lokal/api/v4/
@@ -64,6 +67,8 @@
       key: smtp_port
       value: 1025
 
+    gitlab_use_external_redis: false
+    gitlab_config_redis: # Will be merged with gitlab_config if gitlab_use_external_redis is true
     # Set external redis
     - namespace: redis
       key: enable
@@ -78,6 +83,8 @@
       key: redis_password
       value: "'{{ dependencies_redis_secret }}'"
 
+    gitlab_use_external_postgres: false
+    gitlab_config_postgres: # Will be merged with gitlab_config if gitlab_use_external_postgres is true
     # Set external postgres
     - namespace: postgresql
       key: enable
@@ -104,7 +111,9 @@
       key: db_password
       value: "'{{ dependencies_postgres_passwd }}'"
 
-    # Enable backups to S3 -> S3 simulated with local minio container
+    gitlab_use_buckets: false
+    gitlab_config_buckets: # Will be merged with gitlab_config if gitlab_use_buckets is true
+    # Bucket | Enable backups to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: backup_upload_remote_directory
       value: "'gitlab-backup'"
@@ -123,7 +132,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable artifacts to S3 -> S3 simulated with local minio container
+    # Bucket | Enable artifacts to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: artifacts_enabled
       value: "true"
@@ -148,7 +157,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable mr diffs to S3 -> S3 simulated with local minio container
+    # Bucket | Enable mr diffs to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: external_diffs_enabled
       value: "true"
@@ -173,7 +182,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable lfs to S3 -> S3 simulated with local minio container
+    # Bucket | Enable lfs to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: lfs_enabled
       value: "true"
@@ -198,7 +207,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable uploads to S3 -> S3 simulated with local minio container
+    # Bucket | Enable uploads to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: uploads_object_store_enabled
       value: "true"
@@ -220,7 +229,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable terraform state to S3 -> S3 simulated with local minio container
+    # Bucket | Enable terraform state to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: terraform_state_enabled
       value: "true"
@@ -245,7 +254,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable Secure Files to S3 -> S3 simulated with local minio container
+    # Bucket | Enable Secure Files to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: ci_secure_files_enabled
       value: "true"
@@ -270,7 +279,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable packages to S3 -> S3 simulated with local minio container
+    # Bucket | Enable packages to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: packages_enabled
       value: "true"
@@ -295,7 +304,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable dependency proxy to S3 -> S3 simulated with local minio container
+    # Bucket | Enable dependency proxy to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: dependency_proxy_enabled
       value: "true"
@@ -320,7 +329,7 @@
           'use_iam_profile' => false
         }
 
-    # Enable registry to S3 -> S3 simulated with local minio container
+    # Bucket | Enable registry to S3 -> S3 simulated with local minio container
     - namespace: registry
       key: storage
       block: >-
@@ -335,8 +344,8 @@
           }
         }
 
-    # Set the repositories data dir
-    # ATTENTION - this is a depricated config
+    # Gitaly | Set the repositories data dir
+    # ATTENTION - setting git_data_dirs is a depricated config
     # Use gitaly['configuration'] instead
     # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
     # - regexp: "^# git_data_dirs"
@@ -357,6 +366,7 @@
             }
           ]
         }
+
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:
     #   TeamSettings:
@@ -376,13 +386,57 @@
     # Access Token to attach to root user for terraform api access
     gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
 
+    gitlab_external_url: http://gitlab.lokal
+
+    # Golang
+    golang_version: '1.21'
+    golang_gopath: go
+    golang_additional_libraries:
+    - golang.org/x/tools/cmd/goimports@latest
+    golang_users:
+    - root
+    - vagrant
+
+    # Activate helper Container
+    activate_redis_commander: false
+    activate_pgadmin: false
+    activate_kroki: false
+
+  pre_tasks:
+  - name: check for file custom_vars.yml
+    ansible.builtin.stat:
+      path: custom_vars.yml
+    register: stat_custom_vars
+  - name: load custom vars, if existent
+    ansible.builtin.include_vars:
+      file: custom_vars.yml
+    when: stat_custom_vars.stat.exists
+  - name: Add test Domain to etc hosts
+    ansible.builtin.lineinfile:
+      dest: /etc/hosts
+      regexp: '^127.0.0.1'
+      line: '127.0.0.1 localhost gitlab.lokal'
+      state: present
+
   roles:
   - andrelohmann.root_colored_prompt
-  - andrelohmann.postgresql
+  - andrelohmann.docker
+
+  # uncomment for usage of external postgresql
+  # - andrelohmann.postgresql
+
   - docker_compose_dependencies
-  - andrelohmann.terraform
-  - andrelohmann.golang
+  - config_merger
   - ansible-role-gitlab
-  - gitlab_configuration
+  - api_access_token
+
+  # uncomment for terraform experiments
+  # - andrelohmann.terraform
+  # - andrelohmann.golang
+  # - terraform
+
+  # uncomment for gitlab runner installation
+  - runner_tokens
+  - andrelohmann.gitlab_docker_runner
 
 ...

@@ -1,0 +1,49 @@
+---
+
+# Pause for 60 seconds to let unicorn restart
+- name: Pause | Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Runner | Create docker runner registration token
+  ansible.builtin.uri:
+    url: http://gitlab.lokal/api/v4/user/runners?runner_type=instance_type&description=DockerRunner&paused=true&tag_list=shared,docker
+    method: POST
+    headers:
+      Private-token: "{{ gitlab_api_access_token }}"
+    status_code:
+    - 200
+    - 201
+  register: _runner_register_token
+
+- name: Runner | Debug _runner_register_token
+  ansible.builtin.debug:
+    var: _runner_register_token
+
+- name: Runner | Set facts for docker runner
+  ansible.builtin.set_fact:
+    gitlab_runner_docker_name: "docker-runner" # gitlab runner name/domain
+    gitlab_runner_docker_token: "{{ _runner_register_token.json.token }}"
+    gitlab_runner_docker_privileged: true
+
+- name: Runner | Create shell runner registration token
+  ansible.builtin.uri:
+    url: http://gitlab.lokal/api/v4/user/runners?runner_type=instance_type&description=ShellRunner&paused=true&tag_list=shared,shell
+    method: POST
+    headers:
+      Private-token: "{{ gitlab_api_access_token }}"
+    status_code:
+    - 200
+    - 201
+  register: _runner_register_token
+
+- name: Runner | Debug _runner_register_token
+  ansible.builtin.debug:
+    var: _runner_register_token
+
+- name: Runner | Set facts for shell runner
+  ansible.builtin.set_fact:
+    gitlab_runner_shell_name: "shell-runner" # gitlab runner name/domain
+    gitlab_runner_shell_token: "{{ _runner_register_token.json.token }}"
+
+...

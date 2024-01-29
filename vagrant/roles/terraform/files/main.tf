@@ -2,6 +2,7 @@
 resource "gitlab_application_settings" "signup" {
   signup_enabled                                          = false           # Disale Login
   require_two_factor_authentication                       = true            # require two factor
+  two_factor_grace_period                                 = 24
   can_create_group                                        = false           # disallow users to create top level groups
 }
 
