@@ -29,11 +29,11 @@ molecule test
 
 #### Gitlab
 
-You can test the gitlab uner the following url:
+Open Gitlab:
 
 * http://gitlab.lokal
 
-Use the following credentials for the first gitlab login:
+Login credentials:
 
 ```
 Username: root
@@ -42,7 +42,7 @@ Password: P@ssW0rd.123!
 
 #### Mattermost
 
-If you want to check the mattermost installation, you need to uncomment the mattermost block in the playbook yaml.
+If you want to check the mattermost installation, you need to uncomment the mattermost block in playbook.yml.
 
 * http://chat.lokal
 
@@ -51,6 +51,21 @@ If you want to check the mattermost installation, you need to uncomment the matt
 Mailpit will act as a catch-all email server, that offers a UI, to view incoming emails (e.g. password reset).
 
 * http://gitlab.lokal:8025
+
+* Log in as root
+* http://gitlab.lokal/admin
+* Create new user
+* Fetch password Email from Mailpit
+
+#### Runners
+
+If you need to test the runner installation and jobs, uncomment the runners section in playbook.yml.
+
+* Login to gitlab with the newly created user
+* Create a Project for this user
+* Add the example code from the folder examples/01_runners to your project (you can use the web IDE)
+
+
 
 #### External redis
 

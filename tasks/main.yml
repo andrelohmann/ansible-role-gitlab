@@ -69,4 +69,10 @@
   when: gitlab_run_reconfigure
   changed_when: false
 
+# Pause for 60 seconds to let unicorn restart
+- name: Pause | Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
+  when: gitlab_run_reconfigure
+
 ...
