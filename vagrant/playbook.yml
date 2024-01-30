@@ -34,18 +34,21 @@
     # gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
 
     # gitlab_release: 16.7.3-ce.0
-    gitlb_api_base_url: http://gitlab.lokal/api/v4/
     gitlab_ee: true
     gitlab_initial_root_password: P@ssW0rd.123!
+
+    gitlab_domain: gitlab.lokal
+    gitlab_registry_domain: docker.lokal
+    gitlb_api_base_url: "http://{{ gitlab_domain }}/api/v4/"
     gitlab_config:
 
     # set the URL
     - namespace: external_url
-      value: "'http://gitlab.lokal'"
+      value: "'http://{{ gitlab_domain }}'"
 
     # Enable the docker registry
     - namespace: registry_external_url
-      value: "'http://docker.lokal'"
+      value: "'http://{{ gitlab_registry_domain }}'"
     - namespace: registry
       key: enable
       value: "true"
@@ -53,10 +56,10 @@
     # Set the mailpit catch all data
     - namespace: gitlab_rails
       key: gitlab_email_from
-      value: "'gitlab@gitlab.lokal'"
+      value: "'gitlab@{{ gitlab_domain }}'"
     - namespace: gitlab_rails
       key: gitlab_email_reply_to
-      value: "'gitlab@gitlab.lokal'"
+      value: "'gitlab@{{ gitlab_domain }}'"
     - namespace: gitlab_rails
       key: smtp_enable
       value: "true"
@@ -386,7 +389,7 @@
     # Access Token to attach to root user for terraform api access
     gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
 
-    gitlab_external_url: http://gitlab.lokal
+    gitlab_external_url: "http://{{ gitlab_domain }}"
 
     # Golang
     golang_version: '1.21'
@@ -415,20 +418,21 @@
     ansible.builtin.lineinfile:
       dest: /etc/hosts
       regexp: '^127.0.0.1'
-      line: '127.0.0.1 localhost gitlab.lokal'
+      line: "127.0.0.1 localhost {{ gitlab_domain }} {{ gitlab_registry_domain }}"
       state: present
 
   roles:
   - andrelohmann.root_colored_prompt
   - andrelohmann.docker
+  - insecure_docker
 
   # uncomment for usage of external postgresql
   # - andrelohmann.postgresql
 
   - docker_compose_dependencies
   - config_merger
-  - ansible-role-gitlab
-  - api_access_token
+  #- ansible-role-gitlab
+  #- api_access_token
 
   # uncomment for terraform experiments
   # - andrelohmann.terraform
@@ -436,7 +440,7 @@
   # - terraform
 
   # uncomment for gitlab runner installation
-  - runner_tokens
-  - andrelohmann.gitlab_docker_runner
+  #- runner_tokens
+  #- andrelohmann.gitlab_docker_runner
 
 ...
