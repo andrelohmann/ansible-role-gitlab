@@ -3,3 +3,4 @@
 /vagrant/repositories
 /vagrant/terraform
 /vagrant/roles/andrelohmann*
+.DS_Store

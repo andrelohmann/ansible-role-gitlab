@@ -431,8 +431,8 @@
 
   - docker_compose_dependencies
   - config_merger
-  #- ansible-role-gitlab
-  #- api_access_token
+  - ansible-role-gitlab
+  - api_access_token
 
   # uncomment for terraform experiments
   # - andrelohmann.terraform
@@ -440,7 +440,7 @@
   # - terraform
 
   # uncomment for gitlab runner installation
-  #- runner_tokens
-  #- andrelohmann.gitlab_docker_runner
+  - runner_tokens
+  - andrelohmann.gitlab_docker_runner
 
 ...

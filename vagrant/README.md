@@ -61,9 +61,11 @@ Mailpit will act as a catch-all email server, that offers a UI, to view incoming
 
 If you need to test the runner installation and jobs, uncomment the runners section in playbook.yml.
 
+* Login as root
+* Admin Area -> CI/CD -> Runners -> activate both runners you see
 * Login to gitlab with the newly created user
 * Create a Project for this user
-* Add the example code from the folder examples/01_runners to your project (you can use the web IDE)
+* Add the example code from the folder examples/01_runners to your project (you can use the Web IDE to drag and drop the files)
 
 
 
