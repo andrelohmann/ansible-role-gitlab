@@ -1,5 +1,5 @@
 {
-  "name": "hello-npm",
+  "name": "@exampleuser/hello-npm",
   "version": "1.0.0",
   "description": "my npm test package",
   "main": "index.js",
@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Andre Lohmann",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "@exampleuser:registry": "http://gitlab.lokal/api/v4/projects/1/packages/npm/"
+  }
 }

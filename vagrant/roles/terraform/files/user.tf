@@ -1,7 +1,7 @@
-resource "gitlab_user" "example" {
+resource "gitlab_user" "exampleuser" {
   name             = "Example User"
-  username         = "example"
-  password         = "Example.123"
+  username         = "exampleuser"
+  password         = "Ex@mple.123!"
   email            = "example@gitlab.lokal"
   is_admin         = false
   projects_limit   = 4
@@ -10,8 +10,20 @@ resource "gitlab_user" "example" {
   reset_password   = false
 }
 
-resource "gitlab_project_membership" "example" {
-  project      = gitlab_project.example.id
-  user_id      = gitlab_user.example.id
+resource "gitlab_project_membership" "hello-npm" {
+  project      = gitlab_project.hello-npm.id
+  user_id      = gitlab_user.exampleuser.id
+  access_level = "maintainer"
+}
+
+resource "gitlab_project_membership" "tf-users" {
+  project      = gitlab_project.tf-users.id
+  user_id      = gitlab_user.exampleuser.id
+  access_level = "maintainer"
+}
+
+resource "gitlab_project_membership" "tf-state" {
+  project      = gitlab_project.tf-state.id
+  user_id      = gitlab_user.exampleuser.id
   access_level = "maintainer"
 }
