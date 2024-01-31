@@ -18,48 +18,36 @@
 #     group: vagrant
 #     mode: '0755'
 
-- name: Copy the provider file
+- name: Copy the terraform templates
   ansible.builtin.template:
-    src: provider.tf
-    #dest: "/opt/terraform/provider.tf"
-    dest: "/vagrant/terraform/provider.tf"
+    src: "{{ item }}"
+    dest: "/vagrant/terraform/{{ item }}"
     owner: vagrant
     group: vagrant
     mode: 0644
+  with_items:
+  - provider.tf
+  - terraform.tfvars
 
-- name: Copy the main file
+- name: Copy the terraform files
   ansible.builtin.copy:
-    src: main.tf
-    #dest: "/opt/terraform/main.tf"
-    dest: "/vagrant/terraform/main.tf"
+    src: "{{ item }}"
+    dest: "/vagrant/terraform/{{ item }}"
     owner: vagrant
     group: vagrant
     mode: 0644
-
-- name: Copy the vars file
-  ansible.builtin.copy:
-    src: vars.tf
-    #dest: "/opt/terraform/vars.tf"
-    dest: "/vagrant/terraform/vars.tf"
-    owner: vagrant
-    group: vagrant
-    mode: 0644
-
-- name: Copy the terraform.tfvars file
-  ansible.builtin.template:
-    src: terraform.tfvars
-    #dest: "/opt/terraform/terraform.tfvars"
-    dest: "/vagrant/terraform/terraform.tfvars"
-    owner: vagrant
-    group: vagrant
-    mode: 0644
+  with_items:
+  - main.tf
+  - group.tf
+  - project.tf
+  - user.tf
+  - vars.tf
 
 - name: Initialize terraform
   ansible.builtin.shell: |
     terraform init -no-color
   args:
     executable: /bin/bash
-    #chdir: /opt/terraform/
     chdir: /vagrant/terraform/
 
 # Pause for 60 seconds to let unicorn restart
@@ -72,7 +60,6 @@
     terraform plan -no-color
   args:
     executable: /bin/bash
-    #chdir: /opt/terraform/
     chdir: /vagrant/terraform/
 
 - name: Run terraform
@@ -80,6 +67,6 @@
     terraform apply -auto-approve
   args:
     executable: /bin/bash
-    chdir: /opt/terraform/
+    chdir: /vagrant/terraform/
 
 ...

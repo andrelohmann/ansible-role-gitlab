@@ -435,9 +435,9 @@
   - api_access_token
 
   # uncomment for terraform experiments
-  # - andrelohmann.terraform
-  # - andrelohmann.golang
-  # - terraform
+  - andrelohmann.terraform
+  - andrelohmann.golang
+  - terraform
 
   # uncomment for gitlab runner installation
   - runner_tokens
