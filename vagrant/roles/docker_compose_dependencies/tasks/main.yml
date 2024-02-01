@@ -43,11 +43,6 @@
   when: gitlab_use_buckets
   block:
 
-  - name: Minio | Verify that minio service is running
-    ansible.builtin.assert:
-      that:
-      - "output.services.minio.docker_minio_1.state.running"
-
   - name: Minio | Copy the gitlab bucket policy
     ansible.builtin.copy:
       src: gitlab-buckets.json

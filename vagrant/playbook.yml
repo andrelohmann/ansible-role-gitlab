@@ -114,7 +114,7 @@
       key: db_password
       value: "'{{ dependencies_postgres_passwd }}'"
 
-    gitlab_use_buckets: false
+    gitlab_use_buckets: true
     gitlab_config_buckets: # Will be merged with gitlab_config if gitlab_use_buckets is true
     # Bucket | Enable backups to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
@@ -365,7 +365,15 @@
           storage: [
             {
               name: 'default',
-              path: '/vagrant/repositories',
+              path: '/vagrant/gitaly_disks/disk0',
+            },
+            {
+              name: 'disk1',
+              path: '/vagrant/gitaly_disks/disk1',
+            },
+            {
+              name: 'disk2',
+              path: '/vagrant/gitaly_disks/disk2',
             }
           ]
         }
@@ -414,15 +422,16 @@
     ansible.builtin.include_vars:
       file: custom_vars.yml
     when: stat_custom_vars.stat.exists
-  - name: Add test Domain to etc hosts
-    ansible.builtin.lineinfile:
-      dest: /etc/hosts
-      regexp: '^127.0.0.1'
-      line: "127.0.0.1 localhost {{ gitlab_domain }} {{ gitlab_registry_domain }}"
-      state: present
+  # - name: Add test Domain to etc hosts
+  #   ansible.builtin.lineinfile:
+  #     dest: /etc/hosts
+  #     regexp: '^127.0.0.1'
+  #     line: "127.0.0.1 localhost {{ gitlab_domain }} {{ gitlab_registry_domain }}"
+  #     state: present
 
   roles:
   - andrelohmann.root_colored_prompt
+  - extra_disks
   - andrelohmann.docker
   - insecure_docker
 

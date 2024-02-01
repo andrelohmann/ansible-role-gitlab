@@ -62,11 +62,11 @@
     executable: /bin/bash
     chdir: /vagrant/terraform/
 
-#- name: Run terraform
-#  ansible.builtin.shell: |
-#    terraform apply -auto-approve
-#  args:
-#    executable: /bin/bash
-#    chdir: /vagrant/terraform/
+- name: Run terraform
+  ansible.builtin.shell: |
+    terraform apply -auto-approve
+  args:
+    executable: /bin/bash
+    chdir: /vagrant/terraform/
 
 ...

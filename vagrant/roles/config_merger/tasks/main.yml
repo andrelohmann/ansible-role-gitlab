@@ -2,17 +2,21 @@
 
 - name: Merger | External redis
   ansible.builtin.set_fact:
-    gitlab_config: "{{ gitlab_config | combine(gitlab_config_redis) }}"
+    gitlab_config: "{{ gitlab_config + gitlab_config_redis }}"
   when: gitlab_use_external_redis
 
 - name: Merger | External postgres
   ansible.builtin.set_fact:
-    gitlab_config: "{{ gitlab_config | combine(gitlab_config_postgres) }}"
+    gitlab_config: "{{ gitlab_config + gitlab_config_postgres }}"
   when: gitlab_use_external_postgres
 
 - name: Merger | Minio S3 Buckets
   ansible.builtin.set_fact:
-    gitlab_config: "{{ gitlab_config | combine(gitlab_config_buckets) }}"
+    gitlab_config: "{{ gitlab_config + gitlab_config_buckets }}"
   when: gitlab_use_buckets
+
+- name: Merger | Dump gitlab_config
+  ansible.builtin.debug:
+    var: gitlab_config
 
 ...

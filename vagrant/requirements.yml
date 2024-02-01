@@ -11,5 +11,7 @@ roles:
 collections:
 - community.postgresql
 - community.docker
+- community.general
+- ansible.posix
 
 ...
