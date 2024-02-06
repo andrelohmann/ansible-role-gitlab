@@ -20,7 +20,7 @@
     option: failregex
     value: '^{"method":"POST","path":"\/users\/sign_in",[a-zA-Z:,"]+,"status":0.*"remote_ip":"<HOST>",'
     state: present
-    backup: yes
+    backup: true
 
 - name: Restart fail2ban
   ansible.builtin.systemd:

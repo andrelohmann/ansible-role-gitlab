@@ -23,7 +23,7 @@
 
 - name: Docker | Copy the docker compose file
   ansible.builtin.template:
-    src: docker-compose.yml
+    src: docker-compose.yml.j2
     dest: "/opt/docker/docker-compose.yml"
     owner: vagrant
     group: vagrant

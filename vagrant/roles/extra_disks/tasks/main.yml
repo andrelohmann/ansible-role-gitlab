@@ -57,7 +57,7 @@
   ansible.builtin.file:
     path: /vagrant/gitaly_disks
     state: directory
-    recurse: yes
+    recurse: true
     mode: '0777'
 
 ...

@@ -22,7 +22,7 @@
 
 - name: Runner | Set facts for docker runner
   ansible.builtin.set_fact:
-    gitlab_runner_docker_name: "docker-runner" # gitlab runner name/domain
+    gitlab_runner_docker_name: "docker-runner"  # gitlab runner name/domain
     gitlab_runner_docker_token: "{{ _runner_register_token.json.token }}"
     gitlab_runner_docker_privileged: true
 
@@ -43,7 +43,7 @@
 
 - name: Runner | Set facts for shell runner
   ansible.builtin.set_fact:
-    gitlab_runner_shell_name: "shell-runner" # gitlab runner name/domain
+    gitlab_runner_shell_name: "shell-runner"  # gitlab runner name/domain
     gitlab_runner_shell_token: "{{ _runner_register_token.json.token }}"
 
 ...

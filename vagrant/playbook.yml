@@ -80,7 +80,7 @@
       value: 1025
 
     gitlab_use_external_redis: true
-    gitlab_config_redis: # Will be merged with gitlab_config if gitlab_use_external_redis is true
+    gitlab_config_redis:  # Will be merged with gitlab_config if gitlab_use_external_redis is true
     # Set external redis
     - namespace: redis
       key: enable
@@ -96,7 +96,7 @@
       value: "'{{ dependencies_redis_secret }}'"
 
     gitlab_use_external_postgres: true
-    gitlab_config_postgres: # Will be merged with gitlab_config if gitlab_use_external_postgres is true
+    gitlab_config_postgres:  # Will be merged with gitlab_config if gitlab_use_external_postgres is true
     # Set external postgres
     - namespace: postgresql
       key: enable
@@ -124,7 +124,7 @@
       value: "'{{ dependencies_postgres_passwd }}'"
 
     gitlab_use_buckets: true
-    gitlab_config_buckets: # Will be merged with gitlab_config if gitlab_use_buckets is true
+    gitlab_config_buckets:  # Will be merged with gitlab_config if gitlab_use_buckets is true
     # Bucket | Enable backups to S3 -> S3 simulated with local minio container
     - namespace: gitlab_rails
       key: backup_upload_remote_directory
@@ -361,7 +361,7 @@
         }
 
     gitlab_use_gitaly: true
-    gitlab_config_gitaly: # Will be merged with gitlab_config if gitlab_use_buckets is true
+    gitlab_config_gitaly:  # Will be merged with gitlab_config if gitlab_use_buckets is true
     # Gitaly | Set the repositories data dir
     # ATTENTION - setting git_data_dirs is a depricated config
     # Use gitaly['configuration'] instead

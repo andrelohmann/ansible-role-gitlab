@@ -1,8 +1,9 @@
+---
 stages:
-  - docker-build
-  - artifact-build
-  - package-deploy
-  - release
+- docker-build
+- artifact-build
+- package-deploy
+- release
 
 docker-build:
   stage: docker-build
@@ -56,9 +57,9 @@ publish-pip:
   - if: $CI_COMMIT_TAG
   stage: package-deploy
   script:
-    - pip install build twine
-    - python -m build
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  - pip install build twine
+  - python -m build
+  - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
 release-job:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -74,3 +75,4 @@ release-job:
     name: 'My awesome release $CI_COMMIT_TAG'
     tag_name: '$CI_COMMIT_TAG'
     description: 'Release created using the release-cli'
+...
