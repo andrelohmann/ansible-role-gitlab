@@ -1,0 +1,63 @@
+---
+
+- name: Partition extra harddisks
+  community.general.parted:
+    device: "{{ item }}"
+    number: 1
+    state: present
+    fs_type: ext4
+  with_items:
+  - /dev/sdc
+  - /dev/sdd
+  - /dev/sde
+
+- name: Create a ext4 filesystem
+  community.general.filesystem:
+    fstype: ext4
+    dev: "{{ item }}"
+  with_items:
+  - /dev/sdc1
+  - /dev/sdd1
+  - /dev/sde1
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "/vagrant/gitaly_disks/{{ item }}"
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0777'
+  with_items:
+  - disk0
+  - disk1
+  - disk2
+
+- name: Mount up disk0
+  ansible.posix.mount:
+    path: /vagrant/gitaly_disks/disk0
+    src: /dev/sdc1
+    fstype: ext4
+    state: mounted
+
+- name: Mount up disk1
+  ansible.posix.mount:
+    path: /vagrant/gitaly_disks/disk1
+    src: /dev/sdd1
+    fstype: ext4
+    state: mounted
+
+- name: Mount up disk2
+  ansible.posix.mount:
+    path: /vagrant/gitaly_disks/disk2
+    src: /dev/sde1
+    fstype: ext4
+    state: mounted
+
+- name: Recursively change ownership of a directory
+  ansible.builtin.file:
+    path: /vagrant/gitaly_disks
+    state: directory
+    recurse: true
+    mode: '0777'
+
+...

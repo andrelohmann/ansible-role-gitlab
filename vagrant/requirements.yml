@@ -2,8 +2,17 @@
 
 roles:
 - andrelohmann.root_colored_prompt
+- andrelohmann.iptables
+- andrelohmann.postgresql
 - andrelohmann.terraform
+- andrelohmann.golang
+- andrelohmann.docker
+- andrelohmann.gitlab_docker_runner
 
-collections: []
+collections:
+- community.postgresql
+- community.docker
+- community.general
+- ansible.posix
 
 ...

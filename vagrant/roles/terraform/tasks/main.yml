@@ -1,0 +1,72 @@
+---
+
+- name: fetch latest terrafrom gitlab provider version
+  ansible.builtin.shell: curl -s -o /dev/null -I -w "%{redirect_url}\n" https://github.com/gitlabhq/terraform-provider-gitlab/releases/latest | grep -oP "[0-9]+(\.[0-9]+)+$"
+  args:
+    executable: /bin/bash
+  register: gitlabhq_provider_version
+
+- name: Set version variable
+  ansible.builtin.set_fact:
+    gitlab_terraform_provider_release: "{{ gitlabhq_provider_version.stdout }}"
+
+# - name: Create terraform directory
+#   ansible.builtin.file:
+#     path: /opt/terraform
+#     state: directory
+#     owner: vagrant
+#     group: vagrant
+#     mode: '0755'
+
+- name: Copy the terraform templates
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/vagrant/terraform/{{ item }}"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+  with_items:
+  - provider.tf
+  - terraform.tfvars
+
+- name: Copy the terraform files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/vagrant/terraform/{{ item }}"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+  with_items:
+  - main.tf
+  - group.tf
+  - project.tf
+  - user.tf
+  - vars.tf
+
+- name: Initialize terraform
+  ansible.builtin.shell: |
+    terraform init -no-color
+  args:
+    executable: /bin/bash
+    chdir: /vagrant/terraform/
+
+# Pause for 60 seconds to let unicorn restart
+- name: Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Plan terraform
+  ansible.builtin.shell: |
+    terraform plan -no-color
+  args:
+    executable: /bin/bash
+    chdir: /vagrant/terraform/
+
+- name: Run terraform
+  ansible.builtin.shell: |
+    terraform apply -auto-approve
+  args:
+    executable: /bin/bash
+    chdir: /vagrant/terraform/
+
+...

@@ -1,33 +1,33 @@
 ---
 
-- name: Add gitlab-ce key
+- name: Apt | Add gitlab-ce key
   ansible.builtin.get_url:
     url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
     dest: /etc/apt/trusted.gpg.d/gitlab-ce.asc
     mode: '0644'
     force: true
 
-- name: Add gitlab-ce repo
+- name: Apt | Add gitlab-ce repo
   ansible.builtin.apt_repository:
     repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
     filename: gitlab-ce
     state: present
     update_cache: true
 
-- name: Add gitlab-ce src-repo
+- name: Apt | Add gitlab-ce src-repo
   ansible.builtin.apt_repository:
     repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
     filename: gitlab-ce
     state: present
     update_cache: true
 
-- name: Set pin facts
+- name: Apt | Set pin facts
   ansible.builtin.set_fact:
     _pin_package: gitlab-ce
     _pin_version: "{{ gitlab_release }}"
   when: gitlab_release is defined and gitlab_release != 'latest'
 
-- name: Set gitlab-ce preferences file
+- name: Apt | Set gitlab-ce preferences file
   ansible.builtin.template:
     src: pin.pref.j2
     dest: "/etc/apt/preferences.d/gitlab-ce.pref"
@@ -36,7 +36,7 @@
     mode: 0644
   when: gitlab_release is defined and gitlab_release != 'latest'
 
-- name: Install gitlab-ce
+- name: Apt | Install gitlab-ce
   ansible.builtin.apt:
     name: "{{ packages }}"
     state: present

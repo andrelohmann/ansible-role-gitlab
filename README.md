@@ -1,4 +1,4 @@
-"false"# gitlab
+# gitlab
 
 ![Last test](https://github.com/andrelohmann/ansible-role-gitlab/actions/workflows/test.yml/badge.svg)
 
@@ -16,6 +16,11 @@ The default set of variables defines the gitlab installation and needs at best t
 
     gitlab_release: latest  # e.g. 16.7.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
+
+    # If you are relying on an external postgres database
+    # pg_dump and psql need to be installed with the reflecting version number
+    # gitlab_postgresql_psql_path: /usr/bin/psql
+    # gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
 
     # Run reconfigure as installation step
     gitlab_run_reconfigure: true
@@ -106,14 +111,19 @@ The default set of variables defines the gitlab installation and needs at best t
     #   key: backup_upload_remote_directory
     #   value: "'__backup_upload_remote_directory__'"
     # Set the repositories data dir
-    # - namespace: git_data_dirs
-    #   regexp: "^# git_data_dirs"
-    #   block: |
-    #     git_data_dirs({
-    #       "default" => {
-    #         "path" => "/var/opt/gitlab/git-data"
-    #       }
-    #     })
+    # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
+    # - namespace: gitaly
+    #   key: configuration
+    #   block: >-
+    #     gitaly['configuration'] = {
+    #       storage: [
+    #         {
+    #           name: 'default',
+    #           path: '/your/repositories/mount/path',
+    #         }
+    #       ]
+    #     }
+
     # Install and configure mattermost
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:

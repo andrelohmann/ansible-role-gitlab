@@ -3,6 +3,14 @@
 gitlab_release: latest  # e.g. 16.7.0-ce.0
 gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
+# If an external postgresql database is used,
+# install psql and pg_dump reflecting the correct version
+# and set the command paths regardingly
+# gitlab_postgresql_psql_path: /usr/bin/psql
+# gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+gitlab_postgresql_psql_path: false
+gitlab_postgresql_pg_dump_path: false
+
 # Run reconfigure as installation step
 gitlab_run_reconfigure: true
 
@@ -92,6 +100,19 @@ gitlab_config: []
 #   key: backup_upload_remote_directory
 #   value: "'__backup_upload_remote_directory__'"
 # Set the repositories data dir
+# https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
+# - namespace: gitaly
+#   key: configuration
+#   block: >-
+#     gitaly['configuration'] = {
+#       storage: [
+#         {
+#           name: 'default',
+#           path: '/your/repositories/mount/path',
+#         }
+#       ]
+#     }
+# ATTENTION - this is a depricated config
 # - namespace: git_data_dirs
 #   regexp: "^# git_data_dirs"
 #   block: |
@@ -100,6 +121,7 @@ gitlab_config: []
 #         "path" => "/var/opt/gitlab/git-data"
 #       }
 #     })
+
 # Install and configure mattermost
 # gitlab_mattermost_external_url: http://chat.lokal
 # gitlab_mattermost_additional_configs:

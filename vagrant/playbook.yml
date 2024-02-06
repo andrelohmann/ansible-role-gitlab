@@ -4,20 +4,60 @@
   become_method: sudo
 
   vars:
+    docker_users:
+    - vagrant
 
-    # gitlab_release: 16.7.-ce.0
-    gitlb_api_base_url: http://gitlab.lokal/api/v4/
+    iptables:
+      chains:
+      - name: Gitlab
+        comment: "all Gitlab Traffic"
+        protocol: tcp  # tcp/icmp/udp
+        ports:
+        - 80
+        - 443
+
+    # Set access credentials for dependency containers
+    # These are applied in role docker_compose_dependencies
+    # Postgres DB
+    dependencies_postgres_db: gitlabdb
+    dependencies_postgres_user: gitlab
+    dependencies_postgres_passwd: gitlab_secret
+    # Redis
+    dependencies_redis_secret: r3dis.S3cr3t
+    # Minio S3 API
+    dependencies_minio_rootuser: minioroot
+    dependencies_minio_rootpasswd: miniorootpw
+    # AK / SK for the bucket access user
+    dependencies_minio_accesskey: 43D9EPVMO0QGJ38GXTDO
+    dependencies_minio_secretkey: NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
+    dependencies_minio_endpoint: http://localhost:9000
+    dependencies_minio_region: us-east-1
+
+    # Install postgresql Client to reflect the version
+    # of the external postgresql database
+    postgresql_version: 16
+    postgresql_clients_only: true
+
+    # uncomment for usage of external postgresql
+    gitlab_postgresql_psql_path: /usr/bin/psql
+    gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+
+    # gitlab_release: 16.7.3-ce.0
     gitlab_ee: true
     gitlab_initial_root_password: P@ssW0rd.123!
+
+    gitlab_domain: gitlab.lokal
+    gitlab_registry_domain: docker.lokal
+    gitlb_api_base_url: "http://{{ gitlab_domain }}/api/v4/"
     gitlab_config:
 
     # set the URL
     - namespace: external_url
-      value: "'http://gitlab.lokal'"
+      value: "'http://{{ gitlab_domain }}'"
 
     # Enable the docker registry
     - namespace: registry_external_url
-      value: "'http://docker.lokal'"
+      value: "'http://{{ gitlab_registry_domain }}'"
     - namespace: registry
       key: enable
       value: "true"
@@ -25,10 +65,10 @@
     # Set the mailpit catch all data
     - namespace: gitlab_rails
       key: gitlab_email_from
-      value: "'gitlab@example.com'"
+      value: "'gitlab@{{ gitlab_domain }}'"
     - namespace: gitlab_rails
       key: gitlab_email_reply_to
-      value: "'gitlab@example.com'"
+      value: "'gitlab@{{ gitlab_domain }}'"
     - namespace: gitlab_rails
       key: smtp_enable
       value: "true"
@@ -39,6 +79,8 @@
       key: smtp_port
       value: 1025
 
+    gitlab_use_external_redis: true
+    gitlab_config_redis:  # Will be merged with gitlab_config if gitlab_use_external_redis is true
     # Set external redis
     - namespace: redis
       key: enable
@@ -51,8 +93,10 @@
       value: "6379"
     - namespace: gitlab_rails
       key: redis_password
-      value: "'r3dis.S3cr3t'"
+      value: "'{{ dependencies_redis_secret }}'"
 
+    gitlab_use_external_postgres: true
+    gitlab_config_postgres:  # Will be merged with gitlab_config if gitlab_use_external_postgres is true
     # Set external postgres
     - namespace: postgresql
       key: enable
@@ -71,30 +115,257 @@
       value: "5432"
     - namespace: gitlab_rails
       key: db_database
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_db }}'"
     - namespace: gitlab_rails
       key: db_username
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_user }}'"
     - namespace: gitlab_rails
       key: db_password
-      value: "'gitlab'"
+      value: "'{{ dependencies_postgres_passwd }}'"
 
-    # Enable backups to S3
-    # - namespace: gitlab_rails
-    #   key: backup_upload_connection
-    #   block: |
-    #     gitlab_rails['backup_upload_connection'] = {
-    #       'provider' => 'AWS',
-    #       'region' => 'eu-central-1',
-    #       'aws_access_key_id' => 'XXXXXXX',
-    #       'aws_secret_access_key' => 'XXXXXXX',
-    #       # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
-    #       'use_iam_profile' => false
-    #     }
-    # - namespace: gitlab_rails
-    #   key: backup_upload_remote_directory
-    #   value: "'__your_backup_upload_remote_directory__'"
-    # Set the repositories data dir
+    gitlab_use_buckets: true
+    gitlab_config_buckets:  # Will be merged with gitlab_config if gitlab_use_buckets is true
+    # Bucket | Enable backups to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: backup_upload_remote_directory
+      value: "'gitlab-backup'"
+    - namespace: gitlab_rails
+      key: backup_upload_connection
+      block: >-
+        gitlab_rails['backup_upload_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable artifacts to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: artifacts_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_remote_directory
+      value: "'gitlab-artifacts'"
+    - namespace: gitlab_rails
+      key: artifacts_object_store_connection
+      block: >-
+        gitlab_rails['artifacts_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable mr diffs to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: external_diffs_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_remote_directory
+      value: "'gitlab-mrdiffs'"
+    - namespace: gitlab_rails
+      key: external_diffs_object_store_connection
+      block: >-
+        gitlab_rails['external_diffs_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable lfs to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: lfs_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: lfs_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: lfs_object_store_remote_directory
+      value: "'gitlab-lfs'"
+    - namespace: gitlab_rails
+      key: lfs_object_store_connection
+      block: >-
+        gitlab_rails['lfs_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable uploads to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: uploads_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: uploads_object_store_remote_directory
+      value: "'gitlab-uploads'"
+    - namespace: gitlab_rails
+      key: uploads_object_store_connection
+      block: >-
+        gitlab_rails['uploads_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable terraform state to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: terraform_state_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_remote_directory
+      value: "'gitlab-terraform'"
+    - namespace: gitlab_rails
+      key: terraform_state_object_store_connection
+      block: >-
+        gitlab_rails['terraform_state_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable Secure Files to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: ci_secure_files_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_remote_directory
+      value: "'gitlab-secure-files'"
+    - namespace: gitlab_rails
+      key: ci_secure_files_object_store_connection
+      block: >-
+        gitlab_rails['ci_secure_files_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable packages to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: packages_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: packages_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: packages_object_store_remote_directory
+      value: "'gitlab-packages'"
+    - namespace: gitlab_rails
+      key: packages_object_store_connection
+      block: >-
+        gitlab_rails['packages_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable dependency proxy to S3 -> S3 simulated with local minio container
+    - namespace: gitlab_rails
+      key: dependency_proxy_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_remote_directory
+      value: "'gitlab-dependency-proxy'"
+    - namespace: gitlab_rails
+      key: dependency_proxy_object_store_connection
+      block: >-
+        gitlab_rails['dependency_proxy_object_store_connection'] = {
+          'provider' => 'AWS',
+          # region us-east-1 required for minio
+          'region' => '{{ dependencies_minio_region }}',
+          'path_style' => true, # Use path style instead of subdomain style for minio
+          'aws_access_key_id' => '{{ dependencies_minio_accesskey }}',
+          'aws_secret_access_key' => '{{ dependencies_minio_secretkey }}',
+          'endpoint' => '{{ dependencies_minio_endpoint }}',
+          # # If IAM profile use is enabled, remove aws_access_key_id and aws_secret_access_key
+          'use_iam_profile' => false
+        }
+
+    # Bucket | Enable registry to S3 -> S3 simulated with local minio container
+    - namespace: registry
+      key: storage
+      block: >-
+        registry['storage'] = {
+          's3' => {
+            'accesskey' => '{{ dependencies_minio_accesskey }}',
+            'secretkey' => '{{ dependencies_minio_secretkey }}',
+            'bucket' => 'gitlab-registry',
+            'region' => '{{ dependencies_minio_region }}',
+            'regionendpoint' => '{{ dependencies_minio_endpoint }}',
+            'pathstyle' => true,
+            'maxrequestspersecond' => 100
+          },
+          'redirect' => { # disable redirect to the registry, when running s3 locally
+            'disable' => true
+          }
+        }
+
+    gitlab_use_gitaly: true
+    gitlab_config_gitaly:  # Will be merged with gitlab_config if gitlab_use_buckets is true
+    # Gitaly | Set the repositories data dir
+    # ATTENTION - setting git_data_dirs is a depricated config
+    # Use gitaly['configuration'] instead
+    # https://docs.gitlab.com/ee/administration/reference_architectures/2k_users.html#configure-gitaly
     # - regexp: "^# git_data_dirs"
     #   block: |
     #     git_data_dirs({
@@ -102,6 +373,26 @@
     #         "path" => "/var/opt/gitlab/git-data"
     #       }
     #     })
+    - namespace: gitaly
+      key: configuration
+      block: >-
+        gitaly['configuration'] = {
+          storage: [
+            {
+              name: 'default',
+              path: '/vagrant/gitaly_disks/disk0',
+            },
+            {
+              name: 'disk1',
+              path: '/vagrant/gitaly_disks/disk1',
+            },
+            {
+              name: 'disk2',
+              path: '/vagrant/gitaly_disks/disk2',
+            }
+          ]
+        }
+
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:
     #   TeamSettings:
@@ -121,11 +412,62 @@
     # Access Token to attach to root user for terraform api access
     gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
 
+    gitlab_external_url: "http://{{ gitlab_domain }}"
+
+    # Golang
+    golang_version: '1.21'
+    golang_gopath: go
+    golang_additional_libraries:
+    - golang.org/x/tools/cmd/goimports@latest
+    golang_users:
+    - root
+    - vagrant
+
+    # Activate helper Container
+    activate_redis_commander: false
+    activate_pgadmin: false
+    activate_kroki: false
+
+  pre_tasks:
+  - name: check for file custom_vars.yml
+    ansible.builtin.stat:
+      path: custom_vars.yml
+    register: stat_custom_vars
+  - name: load custom vars, if existent
+    ansible.builtin.include_vars:
+      file: custom_vars.yml
+    when: stat_custom_vars.stat.exists
+  # - name: Add test Domain to etc hosts
+  #   ansible.builtin.lineinfile:
+  #     dest: /etc/hosts
+  #     regexp: '^127.0.0.1'
+  #     line: "127.0.0.1 localhost {{ gitlab_domain }} {{ gitlab_registry_domain }}"
+  #     state: present
+
   roles:
   - andrelohmann.root_colored_prompt
+  - extra_disks
+  - andrelohmann.iptables
+  - andrelohmann.docker
+  - insecure_docker
+
+  # uncomment for usage of external postgresql
+  - andrelohmann.postgresql
+
   - docker_compose_dependencies
-  - andrelohmann.terraform
+  - config_merger
   - ansible-role-gitlab
-  - gitlab_configuration
+  - api_access_token
+  - fail2ban
+
+  # uncomment for terraform experiments
+  - andrelohmann.terraform
+  - andrelohmann.golang
+  - terraform
+
+  # uncomment for gitlab runner installation
+  - runner_tokens
+  - andrelohmann.gitlab_docker_runner
+  - runner_network
 
 ...

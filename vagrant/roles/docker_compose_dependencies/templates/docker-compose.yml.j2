@@ -1,0 +1,110 @@
+---
+version: '3.9'
+
+services:
+
+  mailpit:
+    image: axllent/mailpit
+    restart: always
+    ports:
+    - 8025:8025
+    - 1025:1025
+
+{% if gitlab_use_external_redis %}
+  redis:
+    image: redis:7-alpine
+    volumes:
+    - redisdata:/data
+    ports:
+    - 6379:6379
+    command: redis-server --save 60 1 --loglevel warning --requirepass {{ dependencies_redis_secret }}
+{% if activate_redis_commander %}
+  redis-commander:
+    # container_name: redis-commander
+    # hostname: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    - REDIS_PASSWORD={{ dependencies_redis_secret }}
+    ports:
+    - "8081:8081"
+    depends_on:
+    - redis
+{% endif %}
+{% endif %}
+
+{% if gitlab_use_external_postgres %}
+  postgresdb:
+    image: postgres
+    # image: postgres:15-alpine
+    ports:
+    - 5432:5432
+    environment:
+    - POSTGRES_DB={{ dependencies_postgres_db }}
+    - POSTGRES_USER={{ dependencies_postgres_user }}
+    - POSTGRES_PASSWORD={{ dependencies_postgres_passwd }}
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+{% if activate_pgadmin %}
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+    - 8888:80
+    environment:
+    - PGADMIN_DEFAULT_EMAIL=admin@gitlab.lokal
+    - PGADMIN_DEFAULT_PASSWORD=admin
+    - PGADMIN_DISABLE_POSTFIX=True
+    - PGADMIN_CONFIG_MAIL_SERVER="mailpit"
+    - PGADMIN_CONFIG_MAIL_PORT=1025
+    volumes:
+    - pgadmindata:/var/lib/pgadmin
+    depends_on:
+    - postgresdb
+    - mailpit
+{% endif %}
+{% endif %}
+
+{% if gitlab_use_buckets %}
+  minio:
+    image: quay.io/minio/minio
+    command: minio server /data --console-address ":9001"
+    ports:
+    - 9000:9000
+    - 9001:9001
+    environment:
+    - MINIO_ROOT_USER={{ dependencies_minio_rootuser }}
+    - MINIO_ROOT_PASSWORD={{ dependencies_minio_rootpasswd }}
+    volumes:
+    - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+{% endif %}
+
+{% if activate_pgadmin %}
+  kroki:
+    image: yuzutech/kroki
+    ports:
+    - 8000:8000
+{% endif %}
+
+# elastic:
+#   image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+#   ports:
+#   - 9200:9200
+
+volumes:
+  pgdata:
+    name: "pgdata"
+  pgadmindata:
+    name: "pgadmindata"
+  redisdata:
+    name: "redisdata"
+  miniodata:
+    name: "miniodata"
+...

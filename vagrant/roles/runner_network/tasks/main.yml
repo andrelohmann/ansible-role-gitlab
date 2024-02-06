@@ -1,0 +1,16 @@
+---
+
+- name: Runner | Add network_mode
+  ansible.builtin.lineinfile:
+    path: "/etc/gitlab-runner/config.toml"
+    regexp: "^    network_mode = "
+    insertafter: "^  \\[runners.docker\\]"
+    line: '    network_mode = "host"'
+
+- name: Remove 127.0.2.1 gitlab.lokal gitlab
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    state: absent
+    regexp: '^127.0.2.1 gitlab.lokal gitlab'
+
+...
