@@ -15,6 +15,11 @@
     gitlab_config: "{{ gitlab_config + gitlab_config_buckets }}"
   when: gitlab_use_buckets
 
+- name: Merger | Gitaly storage
+  ansible.builtin.set_fact:
+    gitlab_config: "{{ gitlab_config + gitlab_config_gitaly }}"
+  when: gitlab_use_gitaly
+
 - name: Merger | Dump gitlab_config
   ansible.builtin.debug:
     var: gitlab_config

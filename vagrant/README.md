@@ -57,17 +57,76 @@ Mailpit will act as a catch-all email server, that offers a UI, to view incoming
 * Create new user
 * Fetch password Email from Mailpit
 
+#### Terraform
+
+If you need to test the terraform config, uncomment the terrform section in playbook.yml.
+
+Terraform will create one example group and three projects. Also it will create an exmaple user with the following credentials:
+
+```
+Username: exampleuser
+Password: Ex@mple.123!
+```
+
+You can experiment with terraform by manipulationg the files in the vagrant/terraform folder and then running terraform from within the vargant machine.
+
 #### Runners
 
-If you need to test the runner installation and jobs, uncomment the runners section in playbook.yml.
+If you need to test the runner installation and jobs, uncomment the runners section in playbook.yml (previous terraform steps are recommended).
 
 * Login as root
 * Admin Area -> CI/CD -> Runners -> activate both runners you see
 * Login to gitlab with the newly created user
-* Create a Project for this user
-* Add the example code from the folder examples/01_runners to your project (you can use the Web IDE to drag and drop the files)
+* Login as the exampleuser
+* Add the example code from the folder vagrant/examples to the regarding projects in gitlab previously created by terraform (you can use the Web IDE to drag and drop the files)
+* The examples include README.md files, that explain to you, what steps you need to do
 
+#### LFS
 
+Test the git lfs functionality.
+
+* Add your public ssh key
+* Clone the demopackage repository
+* Follow the instructions of the documentation link
+
+https://docs.gitlab.com/16.8/ee/topics/git/lfs/index.html
+
+#### Buckets
+
+After you have been walking through the previous tests, you should be able to see the S3 buckets getting filled up.
+
+Minio offers a S3 compatible API and a Web UI for the management.
+
+* http://gitlab.lokal:9001
+
+```
+Username: minioroot
+Password: miniorootpw
+```
+
+Test from within the vagrant machine to copy to the bucket
+
+```
+mc alias set vagrant_access http://localhost:9000 43D9EPVMO0QGJ38GXTDO NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
+mc cp --recursive .ansible/ vagrant_access/gitlab-backup/
+```
+
+Test the backup command from within the vagrant machine and watch the backup bucket getting filled.
+
+```
+sudo gitlab-backup create
+```
+
+Test the lfs by following the documentation.
+
+https://docs.gitlab.com/16.8/ee/topics/git/lfs/index.html
+
+Test the secure files bucket by uploading a secret file.
+
+* Go to project demopackage
+* Settings -> CI/CD -> Secure Files -> Upload a text file
+
+Test uploads by e.g. uploading a profile image.
 
 #### External redis
 
@@ -121,44 +180,3 @@ Tab Connection
 * Maintenance Database: postgres
 * Username: gitlab
 * Password: gitlab_secret
-
-#### Minio
-
-Minio offers a S3 compatible API and a Web UI for the management.
-
-* http://gitlab.lokal:9001
-
-```
-Username: minioroot
-Password: miniorootpw
-```
-
-Test from within the vagrant machine to copy to the bucket
-
-```
-mc alias set vagrant_access http://localhost:9000 43D9EPVMO0QGJ38GXTDO NUf8Ucvs0A84m8Ml8P4ypvMdGYigStjtJdmHeSqL
-mc cp --recursive .ansible/ vagrant_access/gitlab-backup/
-```
-
-Test the backup command from within the vagrant machine
-
-```
-sudo gitlab-backup create
-```
-
-
-## Test cases
-
-The vagrant machine allows a bunch of testcases.
-
-### Buckets and repository folders
-
-Configure gitlab to store repositories and other persistent data at specified locations.
-
-#### Prerequisites
-
-* uncomment minio in vagrant/roles/docker_compose_dependecies/templates/docker-compose.yml
-* uncomment all Minio tasks in vagrant/roles/docker_compose_dependecies/tasks/main.yml
-* uncomment all Bucket sections and the Gitaly section of the gitlab_config variable in vagrant/playbook.yml
-
-#### Tests

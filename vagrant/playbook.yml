@@ -7,6 +7,15 @@
     docker_users:
     - vagrant
 
+    iptables:
+      chains:
+      - name: Gitlab
+        comment: "all Gitlab Traffic"
+        protocol: tcp  # tcp/icmp/udp
+        ports:
+        - 80
+        - 443
+
     # Set access credentials for dependency containers
     # These are applied in role docker_compose_dependencies
     # Postgres DB
@@ -30,8 +39,8 @@
     postgresql_clients_only: true
 
     # uncomment for usage of external postgresql
-    # gitlab_postgresql_psql_path: /usr/bin/psql
-    # gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
+    gitlab_postgresql_psql_path: /usr/bin/psql
+    gitlab_postgresql_pg_dump_path: /usr/bin/pg_dump
 
     # gitlab_release: 16.7.3-ce.0
     gitlab_ee: true
@@ -70,7 +79,7 @@
       key: smtp_port
       value: 1025
 
-    gitlab_use_external_redis: false
+    gitlab_use_external_redis: true
     gitlab_config_redis: # Will be merged with gitlab_config if gitlab_use_external_redis is true
     # Set external redis
     - namespace: redis
@@ -86,7 +95,7 @@
       key: redis_password
       value: "'{{ dependencies_redis_secret }}'"
 
-    gitlab_use_external_postgres: false
+    gitlab_use_external_postgres: true
     gitlab_config_postgres: # Will be merged with gitlab_config if gitlab_use_external_postgres is true
     # Set external postgres
     - namespace: postgresql
@@ -343,10 +352,16 @@
             'bucket' => 'gitlab-registry',
             'region' => '{{ dependencies_minio_region }}',
             'regionendpoint' => '{{ dependencies_minio_endpoint }}',
-            'pathstyle' => true
+            'pathstyle' => true,
+            'maxrequestspersecond' => 100
+          },
+          'redirect' => { # disable redirect to the registry, when running s3 locally
+            'disable' => true
           }
         }
 
+    gitlab_use_gitaly: true
+    gitlab_config_gitaly: # Will be merged with gitlab_config if gitlab_use_buckets is true
     # Gitaly | Set the repositories data dir
     # ATTENTION - setting git_data_dirs is a depricated config
     # Use gitaly['configuration'] instead
@@ -432,16 +447,18 @@
   roles:
   - andrelohmann.root_colored_prompt
   - extra_disks
+  - andrelohmann.iptables
   - andrelohmann.docker
   - insecure_docker
 
   # uncomment for usage of external postgresql
-  # - andrelohmann.postgresql
+  - andrelohmann.postgresql
 
   - docker_compose_dependencies
   - config_merger
   - ansible-role-gitlab
   - api_access_token
+  - fail2ban
 
   # uncomment for terraform experiments
   - andrelohmann.terraform
@@ -451,5 +468,6 @@
   # uncomment for gitlab runner installation
   - runner_tokens
   - andrelohmann.gitlab_docker_runner
+  - runner_network
 
 ...

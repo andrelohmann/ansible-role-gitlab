@@ -1,20 +1,20 @@
 # Create a project in the example group
-resource "gitlab_project" "hello-npm" {
-  name         = "hello-npm"
-  description  = "An example nodejs module project"
+resource "gitlab_project" "demopackage" {
+  name         = "demopackage"
+  description  = "An example pypi module project"
   namespace_id = gitlab_group.example.id
 }
 
 # Create a project in the example group
-resource "gitlab_project" "tf-users" {
-  name         = "tf-users"
+resource "gitlab_project" "tfmodule" {
+  name         = "tfmodule"
   description  = "An example terraform module project"
   namespace_id = gitlab_group.example.id
 }
 
 # Create a project in the example group
-resource "gitlab_project" "tf-state" {
-  name         = "tf-state"
+resource "gitlab_project" "tfstate" {
+  name         = "tfstate"
   description  = "An example terraform state project"
   namespace_id = gitlab_group.example.id
 }

@@ -47,8 +47,8 @@ artifact-build:
     exists:
     - example.tex
 
-publish-npm:
-  image: node:latest
+publish-pip:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:latest
   tags:
   - shared
   - docker
@@ -56,9 +56,9 @@ publish-npm:
   - if: $CI_COMMIT_TAG
   stage: package-deploy
   script:
-  - echo "@scope:registry=http://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
-  - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
-  - npm publish
+    - pip install build twine
+    - python -m build
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
 release-job:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
