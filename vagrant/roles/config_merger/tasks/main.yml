@@ -20,6 +20,11 @@
     gitlab_config: "{{ gitlab_config + gitlab_config_gitaly }}"
   when: gitlab_use_gitaly
 
+- name: Merger | Keycloak nginx.conf
+  ansible.builtin.set_fact:
+    gitlab_config: "{{ gitlab_config + gitlab_config_keycloak }}"
+  when: gitlab_config_keycloak
+
 - name: Merger | Dump gitlab_config
   ansible.builtin.debug:
     var: gitlab_config

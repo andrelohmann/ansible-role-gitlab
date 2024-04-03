@@ -29,6 +29,51 @@
     group: vagrant
     mode: 0644
 
+- name: Docker | Create /etc/gitlab/nginx directory
+  ansible.builtin.file:
+    path: /etc/gitlab/nginx
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+  when: gitlab_setup_keycloak
+
+- name: Docker | Copy the keycloak.nginx.conf
+  ansible.builtin.copy:
+    src: keycloak.nginx.conf
+    dest: "/etc/gitlab/nginx/keycloak.nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: gitlab_setup_keycloak
+
+- name: Docker | Copy the keycloak.Dockerfile
+  ansible.builtin.template:
+    src: keycloak.Dockerfile.j2
+    dest: "/opt/docker/keycloak.Dockerfile"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+  when: gitlab_setup_keycloak
+
+- name: Docker | Create postgres directory
+  ansible.builtin.file:
+    path: /opt/docker/postgres
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+  when: gitlab_setup_keycloak
+
+- name: Docker | Copy the create_multiple_postgres_databases.sh
+  ansible.builtin.copy:
+    src: create_multiple_postgres_databases.sh
+    dest: "/opt/docker/postgres/create_multiple_postgres_databases.sh"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+  when: gitlab_setup_keycloak
+
 - name: Docker | Create and start services
   community.docker.docker_compose_v2:
     project_src: /opt/docker
@@ -117,5 +162,9 @@
   - name: Minio | Dump minio_user
     ansible.builtin.debug:
       var: minio_user
+
+  - name: Include | Include Keycloak
+    ansible.builtin.include_tasks: keycloak.yml
+    when: gitlab_setup_keycloak
 
 ...

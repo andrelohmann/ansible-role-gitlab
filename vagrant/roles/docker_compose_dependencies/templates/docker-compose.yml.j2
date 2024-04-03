@@ -25,8 +25,8 @@ services:
     image: ghcr.io/joeferner/redis-commander:latest
     restart: always
     environment:
-    - REDIS_HOSTS=local:redis:6379
-    - REDIS_PASSWORD={{ dependencies_redis_secret }}
+      REDIS_HOSTS: local:redis:6379
+      REDIS_PASSWORD: {{ dependencies_redis_secret }}
     ports:
     - "8081:8081"
     depends_on:
@@ -41,11 +41,22 @@ services:
     ports:
     - 5432:5432
     environment:
-    - POSTGRES_DB={{ dependencies_postgres_db }}
-    - POSTGRES_USER={{ dependencies_postgres_user }}
-    - POSTGRES_PASSWORD={{ dependencies_postgres_passwd }}
+{% if gitlab_setup_keycloak %}
+      POSTGRES_MULTIPLE_DATABASES: keycloak
+{% endif %}
+      POSTGRES_DB: {{ dependencies_postgres_db }}
+      POSTGRES_USER: {{ dependencies_postgres_user }}
+      POSTGRES_PASSWORD: {{ dependencies_postgres_passwd }}
     volumes:
     - pgdata:/var/lib/postgresql/data
+{% if gitlab_setup_keycloak %}
+    - /opt/docker/postgres:/docker-entrypoint-initdb.d
+{% endif %}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ dependencies_postgres_user }} -d postgres://127.0.0.1/{{ dependencies_postgres_db }}"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
 {% if activate_pgadmin %}
   pgadmin:
     image: dpage/pgadmin4
@@ -53,17 +64,51 @@ services:
     ports:
     - 8888:80
     environment:
-    - PGADMIN_DEFAULT_EMAIL=admin@gitlab.lokal
-    - PGADMIN_DEFAULT_PASSWORD=admin
-    - PGADMIN_DISABLE_POSTFIX=True
-    - PGADMIN_CONFIG_MAIL_SERVER="mailpit"
-    - PGADMIN_CONFIG_MAIL_PORT=1025
+      PGADMIN_DEFAULT_EMAIL: admin@gitlab.lokal
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DISABLE_POSTFIX: True
+      PGADMIN_CONFIG_MAIL_SERVER: "mailpit"
+      PGADMIN_CONFIG_MAIL_PORT: 1025
     volumes:
     - pgadmindata:/var/lib/pgadmin
     depends_on:
     - postgresdb
     - mailpit
 {% endif %}
+
+{% if gitlab_setup_keycloak %}
+  keycloak:
+    #build:
+    #  dockerfile: ./keycloak.Dockerfile
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+    - 8089:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: change_me
+      KC_DB: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_SCHEMA: public
+      KC_DB_URL: jdbc:postgresql://postgresdb/keycloak
+      KC_DB_USERNAME: {{ dependencies_postgres_user }}
+      KC_DB_PASSWORD: {{ dependencies_postgres_passwd }}
+      KC_HEALTH_ENABLED: true
+    command:
+    - start
+    - --proxy-headers=xforwarded
+    - --http-enabled=true
+    - --hostname-strict=false
+    - --hostname-strict-https=false
+    healthcheck:
+      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+{% endif %}
+
 {% endif %}
 
 {% if gitlab_use_buckets %}
