@@ -180,3 +180,26 @@ Tab Connection
 * Maintenance Database: postgres
 * Username: gitlab
 * Password: gitlab_secret
+
+## SSO
+
+SSO is activated via keycloak.
+
+* http://login.lokal
+
+```
+Username: admin
+Password: change_me
+```
+
+There are two Users precreated for you to login to gitlab via SSO.
+
+```
+Email: john.doe@gitlab.lokal
+Password: Test.123456!
+```
+
+```
+Email: james.dean@gitlab.lokal
+Password: Test.12345!
+```

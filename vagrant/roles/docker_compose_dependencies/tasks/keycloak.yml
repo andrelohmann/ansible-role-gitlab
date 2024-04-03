@@ -1,0 +1,55 @@
+---
+
+# Keycloak Setup extracted from the following links:
+# https://suedbroecker.net/2022/12/12/how-to-create-a-new-realm-with-the-keycloak-version-20-0-1-rest-api-and-curl/
+# https://suedbroecker.net/2022/12/08/export-a-keycloak-version-20-realm/
+# https://www.keycloak.org/docs-api/24.0.2/rest-api/index.html
+# https://dheeruthedeployer.medium.com/gitlab-integration-with-keycloak-e1b2ff11a177
+# https://www.puppeteers.net/blog/gitlab-saml-with-keycloak/
+
+# Pause for 60 seconds to let unicorn restart
+- name: Pause | Wait for 60 seconds
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Keycloak | Install packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: true
+    autoremove: true
+    update_cache: true
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - curl
+
+- name: Keycloak | Fetch access_token
+  ansible.builtin.shell: curl -d 'client_id=admin-cli' -d 'username=admin' -d 'password=change_me' -d 'grant_type=password' 'localhost:8089/realms/master/protocol/openid-connect/token'  | sed -n 's|.*"access_token":"\([^"]*\)".*|\1|p'
+  args:
+    executable: /bin/bash
+  register: _keycloak_access_token
+
+- name: Keycloak | Set access_token
+  ansible.builtin.set_fact:
+    keycloak_access_token: "{{ _keycloak_access_token.stdout }}"
+
+- name: Keycloak | Dump access_token
+  debug:
+    var: keycloak_access_token
+
+- name: Keycloak | Copy gitlab-realm.json
+  ansible.builtin.copy:
+    src: gitlab-realm.json
+    dest: "/opt/docker/gitlab-realm.json"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Keycloak | Apply realm
+  ansible.builtin.shell: "curl -d @'/opt/docker/gitlab-realm.json' -H 'Content-Type: application/json' -H 'Authorization: bearer {{ keycloak_access_token }}' 'localhost:8089/admin/realms'"
+  args:
+    executable: /bin/bash
+
+...

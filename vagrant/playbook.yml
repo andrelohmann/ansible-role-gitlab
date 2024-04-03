@@ -393,6 +393,45 @@
           ]
         }
 
+    # This config is matching the gitlab-realm.json file in roles/docker_compose_dependencies/files/
+    gitlab_config_keycloak:  # Will be merged with gitlab_config if gitlab_setup_keycloak is true
+    # Bucket | Enable backups to S3 -> S3 simulated with local minio container
+    - namespace: nginx
+      key: custom_nginx_config
+      value: "'include /etc/gitlab/nginx/*.conf;'"
+    - namespace: gitlab_rails
+      key: omniauth_enabled
+      value: "true"
+    - namespace: gitlab_rails
+      key: omniauth_allow_single_sign_on
+      value: "['saml']"
+    # gitlab_rails[‘omniauth_auto_sign_in_with_provider’] = ‘saml’
+    - namespace: gitlab_rails
+      key: omniauth_block_auto_created_users
+      value: "false"
+    - namespace: gitlab_rails
+      key: omniauth_auto_link_saml_user
+      value: "true"
+    - namespace: gitlab_rails
+      key: omniauth_providers
+      block: >-
+        gitlab_rails['omniauth_providers'] = [
+          {
+            name: 'saml',
+            args: {
+              assertion_consumer_service_url: 'http://gitlab.lokal/users/auth/saml/callback',
+              idp_cert: " -----BEGIN CERTIFICATE-----\n MIICmzCCAYMCBgGOpA7g+TANBgkqhkiG9w0BAQsFADARMQ8wDQYDVQQDDAZHaXRsYWIwHhcNMjQwNDAzMTMwMjAyWhcNMzQwNDAzMTMwMzQyWjARMQ8wDQYDVQQDDAZHaXRsYWIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC7xSdp3GzdZisxwvL5vUujbi8UXSKs1V+9uXlUemC4rQpMat/mJi3XmczPeN8dhnpSTDrGvBEBH9addXnztibXR2kapa/SuHRGldz9YMzWjW1E0fGOevHfqYN8ig0s3M+WrXaA8yxrjlTvc6mEQ629dYXsUZtTRTppb/ZraIwvMWWVBLF5jeaClQomiR7ii9WaCeJElHR+h1615vaUduYilhKm1lbj8vtYYa6imFDPWb0MabIm3CVlhjZC/XUhFT4uMSxeD2xZ9oXNXDjpc/MM/Ave333cfZsIcvywqitSuK7Lvu4WeAwqhWc+FwI68hvLDNUqh/E1Xorz+hPJKMpzAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAEQEWd1R/IVBimrhaYdv8HMVxQbjE72ygzA+13VlHHD/sRzH9RcoDauHOkonON5FsyGWg9ftrJr2UxozKC9u8pt1WwYeVyuXq31jT42pkYvv4cYvhAA2h3ni78sHKb2KduYEjztGE6G4P5MQi9GUqMJZgLBE3t5gnC3rZH4SrQBX+h/6xjNnYJPj5epPK/QyVqCt41IlXlLuuUqi4dQO8nY41j9OCh4W4/BsF3I15kONmIOIVc10WA8kOLKIGh4te5hT+glQJu5viROPpyeT6Ky6wzwiOiLYX2H7wXNIi7SfhT1ZuTokuMvq8KyPlDKc2kz/gtJiKa9Cnr1tOHQ10+g=\n -----END CERTIFICATE----- \n",
+              idp_sso_target_url: 'http://login.lokal/realms/gitlab/protocol/saml/clients/gitlab.lokal',
+              issuer: 'gitlab.lokal',
+              name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+            },
+            label: 'KEYCLOAK LOGIN'
+          }
+        ]
+
+    # Use Keycloak
+    gitlab_setup_keycloak: true
+
     # gitlab_mattermost_external_url: http://chat.lokal
     # gitlab_mattermost_additional_configs:
     #   TeamSettings:
