@@ -18,8 +18,8 @@ platforms:
   cgroupns_mode: host
   pre_build_image: false
   dockerfile: Dockerfile.j2
-- name: ubuntu_focal
-  image: ubuntu:20.04
+- name: ubuntu_noble
+  image: ubuntu:24.04
   command: ""
   tmpfs:
   - /tmp

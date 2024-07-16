@@ -49,7 +49,7 @@
 - name: Postgres CLI | Set psql symlink
   ansible.builtin.file:
     src: "{{ gitlab_postgresql_psql_path }}"
-    dest: /opt/gitlab/bin/psql
+    dest: /opt/gitlab/embedded/bin/psql
     owner: root
     group: root
     state: link
@@ -58,7 +58,7 @@
 - name: Postgres CLI | Set pg_dump symlink
   ansible.builtin.file:
     src: "{{ gitlab_postgresql_pg_dump_path }}"
-    dest: /opt/gitlab/bin/pg_dump
+    dest: /opt/gitlab/embedded/bin/pg_dump
     owner: root
     group: root
     state: link

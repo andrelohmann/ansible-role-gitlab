@@ -7,18 +7,18 @@
     state: present
     fs_type: ext4
   with_items:
+  - /dev/sdb
   - /dev/sdc
   - /dev/sdd
-  - /dev/sde
 
 - name: Create a ext4 filesystem
   community.general.filesystem:
     fstype: ext4
     dev: "{{ item }}"
   with_items:
+  - /dev/sdb1
   - /dev/sdc1
   - /dev/sdd1
-  - /dev/sde1
 
 - name: Create directories
   ansible.builtin.file:
@@ -35,21 +35,21 @@
 - name: Mount up disk0
   ansible.posix.mount:
     path: /vagrant/gitaly_disks/disk0
-    src: /dev/sdc1
+    src: /dev/sdb1
     fstype: ext4
     state: mounted
 
 - name: Mount up disk1
   ansible.posix.mount:
     path: /vagrant/gitaly_disks/disk1
-    src: /dev/sdd1
+    src: /dev/sdc1
     fstype: ext4
     state: mounted
 
 - name: Mount up disk2
   ansible.posix.mount:
     path: /vagrant/gitaly_disks/disk2
-    src: /dev/sde1
+    src: /dev/sdd1
     fstype: ext4
     state: mounted
 
