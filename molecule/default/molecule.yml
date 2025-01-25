@@ -6,12 +6,14 @@ driver:
 platforms:
 - name: ubuntu_jammy
   image: ubuntu:22.04
-  command: ""
+  docker_extra_args:
+  - --cap-add=SYS_ADMIN
+  command: /sbin/init
   tmpfs:
   - /tmp
   - /run
   - /run/lock
-  priviledged: true
+  privileged: true
   volumes:
   - /sys/fs/cgroup:/sys/fs/cgroup:rw
   - /var/lib/containerd
@@ -20,12 +22,14 @@ platforms:
   dockerfile: Dockerfile.j2
 - name: ubuntu_noble
   image: ubuntu:24.04
-  command: ""
+  docker_extra_args:
+  - --cap-add=SYS_ADMIN
+  command: /sbin/init
   tmpfs:
   - /tmp
   - /run
   - /run/lock
-  priviledged: true
+  privileged: true
   volumes:
   - /sys/fs/cgroup:/sys/fs/cgroup:rw
   - /var/lib/containerd
