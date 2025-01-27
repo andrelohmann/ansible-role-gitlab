@@ -33,7 +33,7 @@
     dest: "/etc/apt/preferences.d/gitlab-ee.pref"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: gitlab_release is defined and gitlab_release != 'latest'
 
 - name: Apt | Install gitlab-ee

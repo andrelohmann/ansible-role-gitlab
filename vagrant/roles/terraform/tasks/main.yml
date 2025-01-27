@@ -24,7 +24,7 @@
     dest: "/vagrant/terraform/{{ item }}"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
   with_items:
   - provider.tf
   - terraform.tfvars
@@ -35,7 +35,7 @@
     dest: "/vagrant/terraform/{{ item }}"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
   with_items:
   - main.tf
   - group.tf

@@ -45,7 +45,7 @@
     dest: "/opt/docker/gitlab-realm.json"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
 
 - name: Keycloak | Apply realm
   ansible.builtin.shell: "curl -d @'/opt/docker/gitlab-realm.json' -H 'Content-Type: application/json' -H 'Authorization: bearer {{ keycloak_access_token }}' 'localhost:8089/admin/realms'"

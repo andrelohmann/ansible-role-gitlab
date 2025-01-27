@@ -6,7 +6,7 @@
     dest: /etc/mattermost-backup.sh
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"
   when: gitlab_mattermost_backup_dir is defined
 
 - name: Mattermost | Create mattermost backup dir
@@ -15,7 +15,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0770
+    mode: "0770"
   when: gitlab_mattermost_backup_dir is defined
 
 - name: Mattermost | Enable mattermost
@@ -51,6 +51,6 @@
     dest: /var/opt/gitlab/mattermost/config.json
     owner: mattermost
     group: root
-    mode: 0644
+    mode: "0644"
 
 ...
