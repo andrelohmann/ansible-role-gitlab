@@ -47,7 +47,7 @@
     cache_valid_time: 3600
   vars:
     packages:
-      - gitlab-ee
+    - gitlab-ee
   notify: Gitlab reconfigure
 
 ...
