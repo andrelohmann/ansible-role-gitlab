@@ -35,7 +35,7 @@
 
     # Install postgresql Client to reflect the version
     # of the external postgresql database
-    postgresql_version: 16
+    postgresql_version: 17
     postgresql_clients_only: true
 
     # uncomment for usage of external postgresql
@@ -454,7 +454,7 @@
     gitlab_external_url: "http://{{ gitlab_domain }}"
 
     # Golang
-    golang_version: '1.21'
+    golang_version: 'latest'
     golang_gopath: go
     golang_additional_libraries:
     - golang.org/x/tools/cmd/goimports@latest

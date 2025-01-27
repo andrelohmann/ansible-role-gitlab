@@ -9,6 +9,9 @@ platforms:
   docker_extra_args:
   - --cap-add=SYS_ADMIN
   command: /sbin/init
+  security_opts:
+  - seccomp=unconfined
+  - apparmor=unconfined
   tmpfs:
   - /tmp
   - /run
@@ -24,6 +27,9 @@ platforms:
   image: ubuntu:24.04
   docker_extra_args:
   - --cap-add=SYS_ADMIN
+  security_opts:
+  - seccomp=unconfined
+  - apparmor=unconfined
   command: /sbin/init
   tmpfs:
   - /tmp

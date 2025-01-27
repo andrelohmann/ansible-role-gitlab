@@ -26,8 +26,8 @@ rules:
   comments:
     require-starting-space: true
     ignore-shebangs: true
-    min-spaces-from-content: 2
-  comments-indentation: {}
+    min-spaces-from-content: 1
+  comments-indentation: false
   document-start:
     present: true
     level: warning
@@ -46,7 +46,7 @@ rules:
   indentation:
     spaces: consistent
     indent-sequences: consistent
-    check-multi-line-strings: false
+    check-multi-line-strings: true
     level: error
   key-duplicates: enable
   line-length: disable
@@ -58,4 +58,7 @@ rules:
   truthy:
     allowed-values: ['true', 'false']
     check-keys: false
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
 ...
