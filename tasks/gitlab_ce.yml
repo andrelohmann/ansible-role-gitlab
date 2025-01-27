@@ -33,7 +33,7 @@
     dest: "/etc/apt/preferences.d/gitlab-ce.pref"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: gitlab_release is defined and gitlab_release != 'latest'
 
 - name: Apt | Install gitlab-ce
@@ -47,7 +47,7 @@
     cache_valid_time: 3600
   vars:
     packages:
-      - gitlab-ce
+    - gitlab-ce
   notify: Gitlab reconfigure
 
 ...

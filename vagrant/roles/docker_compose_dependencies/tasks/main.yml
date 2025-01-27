@@ -27,7 +27,7 @@
     dest: "/opt/docker/docker-compose.yml"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
 
 - name: Docker | Create /etc/gitlab/nginx directory
   ansible.builtin.file:
@@ -35,7 +35,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: gitlab_setup_keycloak
 
 - name: Docker | Copy the keycloak.nginx.conf
@@ -44,7 +44,7 @@
     dest: "/etc/gitlab/nginx/keycloak.nginx.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: gitlab_setup_keycloak
 
 - name: Docker | Copy the keycloak.Dockerfile
@@ -53,7 +53,7 @@
     dest: "/opt/docker/keycloak.Dockerfile"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
   when: gitlab_setup_keycloak
 
 - name: Docker | Create postgres directory
@@ -71,7 +71,7 @@
     dest: "/opt/docker/postgres/create_multiple_postgres_databases.sh"
     owner: vagrant
     group: vagrant
-    mode: 0644
+    mode: "0644"
   when: gitlab_setup_keycloak
 
 - name: Docker | Create and start services
@@ -94,7 +94,7 @@
       dest: "/opt/docker/gitlab-buckets.json"
       owner: vagrant
       group: vagrant
-      mode: 0644
+      mode: "0644"
 
   - name: Minio | Download minio cli
     ansible.builtin.get_url:
@@ -102,7 +102,7 @@
       dest: /usr/local/bin/mc
       owner: root
       group: root
-      mode: 0755
+      mode: "0755"
 
   - name: Minio | Set the mc alias "myminio"
     # username and passwrod extracted from docker-compose file
