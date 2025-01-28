@@ -1,7 +1,8 @@
 ---
-- hosts: all
+- name: Install
+  hosts: all
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
 
   vars:
     docker_users:
@@ -484,29 +485,29 @@
   #     state: present
 
   roles:
-  - andrelohmann.root_colored_prompt
-  - extra_disks
-  - andrelohmann.iptables
-  - andrelohmann.docker
-  - insecure_docker
+  - name: andrelohmann.root_colored_prompt
+  - name: extra_disks
+  - name: andrelohmann.iptables
+  - name: andrelohmann.docker
+  - name: insecure_docker
 
   # uncomment for usage of external postgresql
-  - andrelohmann.postgresql
+  - name: andrelohmann.postgresql
 
-  - docker_compose_dependencies
-  - config_merger
-  - ansible-role-gitlab
-  - api_access_token
-  - fail2ban
+  - name: docker_compose_dependencies
+  - name: config_merger
+  - name: ansible-role-gitlab
+  - name: api_access_token
+  - name: fail2ban
 
   # uncomment for terraform experiments
-  - andrelohmann.terraform
-  - andrelohmann.golang
-  - terraform
+  - name: andrelohmann.terraform
+  - name: andrelohmann.golang
+  - name: terraform
 
   # uncomment for gitlab runner installation
-  - runner_tokens
-  - andrelohmann.gitlab_docker_runner
-  - runner_network
+  - name: runner_tokens
+  - name: andrelohmann.gitlab_docker_runner
+  - name: runner_network
 
 ...

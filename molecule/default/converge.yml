@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   vars:
     gitlab_release: latest
     gitlab_ee: true
@@ -17,7 +17,7 @@
       key: enable
       value: "false"
   tasks:
-  - name: "Include andrelohmann.gitlab"
-    include_role:
+  - name: Include andrelohmann.gitlab
+    ansible.builtin.include_role:
       name: "andrelohmann.gitlab"
 ...

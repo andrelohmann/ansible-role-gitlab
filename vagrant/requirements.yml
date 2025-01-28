@@ -1,18 +1,18 @@
 ---
 
 roles:
-- andrelohmann.root_colored_prompt
-- andrelohmann.iptables
-- andrelohmann.postgresql
-- andrelohmann.terraform
-- andrelohmann.golang
-- andrelohmann.docker
-- andrelohmann.gitlab_docker_runner
+- name: andrelohmann.root_colored_prompt
+- name: andrelohmann.iptables
+- name: andrelohmann.postgresql
+- name: andrelohmann.terraform
+- name: andrelohmann.golang
+- name: andrelohmann.docker
+- name: andrelohmann.gitlab_docker_runner
 
 collections:
-- community.postgresql
-- community.docker
-- community.general
-- ansible.posix
+- name: community.postgresql
+- name: community.docker
+- name: community.general
+- name: ansible.posix
 
 ...
