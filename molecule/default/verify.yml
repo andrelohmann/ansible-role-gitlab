@@ -20,8 +20,9 @@
       - ruby
 
   - name: Run ruby command agains gitlab.rb
-    ansible.builtin.shell: ruby -c /etc/gitlab/gitlab.rb
+    ansible.builtin.command: ruby -c /etc/gitlab/gitlab.rb
     register: gitlab_config_status
+    changed_when: false
 
   - name: Dump gitlab config status
     ansible.builtin.debug:
