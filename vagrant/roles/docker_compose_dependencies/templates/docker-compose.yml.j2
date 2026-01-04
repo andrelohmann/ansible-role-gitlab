@@ -1,6 +1,4 @@
 ---
-version: '3.9'
-
 services:
 
   mailpit:
@@ -36,8 +34,8 @@ services:
 
 {% if gitlab_use_external_postgres %}
   postgresdb:
-    image: postgres
-    # image: postgres:15-alpine
+    # image: postgres
+    image: postgres:17-alpine
     ports:
     - 5432:5432
     environment:
@@ -130,7 +128,7 @@ services:
     restart: always
 {% endif %}
 
-{% if activate_pgadmin %}
+{% if activate_kroki %}
   kroki:
     image: yuzutech/kroki
     ports:

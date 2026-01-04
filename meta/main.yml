@@ -13,7 +13,6 @@ galaxy_info:
   - name: Ubuntu
     versions:
     - noble
-    - jammy
 
   galaxy_tags:
   - gitlab

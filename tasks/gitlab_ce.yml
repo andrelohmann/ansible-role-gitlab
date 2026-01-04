@@ -9,14 +9,14 @@
 
 - name: Apt | Add gitlab-ce repo
   ansible.builtin.apt_repository:
-    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_facts[\"distribution\"] | lower }}/ {{ ansible_facts[\"distribution_release\"] | lower }} main"
     filename: gitlab-ce
     state: present
     update_cache: true
 
 - name: Apt | Add gitlab-ce src-repo
   ansible.builtin.apt_repository:
-    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_facts[\"distribution\"] | lower }}/ {{ ansible_facts[\"distribution_release\"] | lower }} main"
     filename: gitlab-ce
     state: present
     update_cache: true
