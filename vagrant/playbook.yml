@@ -394,6 +394,7 @@
           ]
         }
 
+    gitlab_use_keycloak: true
     # This config is matching the gitlab-realm.json file in roles/docker_compose_dependencies/files/
     gitlab_config_keycloak:  # Will be merged with gitlab_config if gitlab_setup_keycloak is true
     # Bucket | Enable backups to S3 -> S3 simulated with local minio container
@@ -485,29 +486,29 @@
   #     state: present
 
   roles:
-  - name: andrelohmann.root_colored_prompt
-  - name: extra_disks
-  - name: andrelohmann.iptables
-  - name: andrelohmann.docker
-  - name: insecure_docker
+  - role: andrelohmann.root_colored_prompt
+  - role: extra_disks
+  - role: andrelohmann.iptables
+  - role: andrelohmann.docker
+  - role: insecure_docker
 
   # uncomment for usage of external postgresql
-  - name: andrelohmann.postgresql
+  - role: andrelohmann.postgresql
 
-  - name: docker_compose_dependencies
-  - name: config_merger
-  - name: ansible-role-gitlab
-  - name: api_access_token
-  - name: fail2ban
+  - role: docker_compose_dependencies
+  - role: config_merger
+  - role: ansible-role-gitlab
+  - role: api_access_token
+  - role: fail2ban
 
   # uncomment for terraform experiments
-  - name: andrelohmann.terraform
-  - name: andrelohmann.golang
-  - name: terraform
+  - role: andrelohmann.terraform
+  - role: andrelohmann.golang
+  - role: terraform
 
   # uncomment for gitlab runner installation
-  - name: runner_tokens
-  - name: andrelohmann.gitlab_docker_runner
-  - name: runner_network
+  - role: runner_tokens
+  - role: andrelohmann.gitlab_docker_runner
+  - role: runner_network
 
 ...

@@ -53,7 +53,7 @@
     owner: root
     group: root
     state: link
-  when: gitlab_postgresql_psql_path
+  when: gitlab_postgresql_psql_path is not false
 
 - name: Postgres CLI | Set pg_dump symlink
   ansible.builtin.file:
@@ -62,7 +62,7 @@
     owner: root
     group: root
     state: link
-  when: gitlab_postgresql_pg_dump_path
+  when: gitlab_postgresql_pg_dump_path is not false
 
 - name: Restart gitlab
   ansible.builtin.command: gitlab-ctl restart
