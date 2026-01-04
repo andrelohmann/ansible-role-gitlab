@@ -491,7 +491,7 @@
   - role: andrelohmann.iptables
   - role: andrelohmann.docker
   - role: insecure_docker
-  
+
   # uncomment for usage of external postgresql
   - role: andrelohmann.postgresql
 
