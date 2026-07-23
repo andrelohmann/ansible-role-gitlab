@@ -3,4 +3,5 @@
 /vagrant/repositories
 /vagrant/terraform
 /vagrant/roles/andrelohmann*
+.ansible
 .DS_Store

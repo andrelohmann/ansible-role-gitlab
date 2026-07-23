@@ -434,22 +434,6 @@
     # Use Keycloak
     gitlab_setup_keycloak: true
 
-    # gitlab_mattermost_external_url: http://chat.lokal
-    # gitlab_mattermost_additional_configs:
-    #   TeamSettings:
-    #     SiteName: "chat.lokal"
-    #   EmailSettings:
-    #     EnableSignUpWithEmail: False
-    #     EnableSignInWithEmail: False
-    #     EnableSignInWithUsername: False
-    #     SendEmailNotifications: True
-    #     UseChannelInEmailNotifications: True
-    #     FeedbackName: "chat.lokal"
-    #     FeedbackEmail: "gitlab@example.com"
-    #     SMTPUsername: "gitlab@example.com"
-    #     SMTPServer: "localhost"
-    #     SMTPPort: "1025"
-
     # Access Token to attach to root user for terraform api access
     gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
 

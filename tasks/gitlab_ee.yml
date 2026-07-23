@@ -3,23 +3,29 @@
 - name: Apt | Add gitlab-ee key
   ansible.builtin.get_url:
     url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
-    dest: /etc/apt/trusted.gpg.d/gitlab-ee.asc
+    dest: /etc/apt/keyrings/gitlab-ee.asc
     mode: '0644'
     force: true
 
 - name: Apt | Add gitlab-ee repo
-  ansible.builtin.apt_repository:
-    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_facts[\"distribution\"] | lower }}/ {{ ansible_facts[\"distribution_release\"] | lower }} main"
-    filename: gitlab-ee
+  ansible.builtin.deb822_repository:
+    name: gitlab-ee
+    install_python_debian: true
+    types:
+    - deb
+    - deb-src
+    uris: "https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_facts[\"distribution\"] | lower }}/"
+    suites: "{{ ansible_facts[\"distribution_release\"] | lower }}"
+    components:
+    - main
+    signed_by: /etc/apt/keyrings/gitlab-ee.asc
     state: present
-    update_cache: true
 
-- name: Apt | Add gitlab-ee src-repo
-  ansible.builtin.apt_repository:
-    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ee/{{ ansible_facts[\"distribution\"] | lower }}/ {{ ansible_facts[\"distribution_release\"] | lower }} main"
-    filename: gitlab-ee
-    state: present
+- name: Apt | Refresh cache after gitlab-ee repo change
+  ansible.builtin.apt:
     update_cache: true
+    cache_valid_time: 0
+  changed_when: false
 
 - name: Apt | Set pin facts
   ansible.builtin.set_fact:
@@ -45,6 +51,8 @@
     autoremove: true
     update_cache: true
     cache_valid_time: 3600
+  environment:
+    DEBIAN_FRONTEND: noninteractive
   vars:
     packages:
     - gitlab-ee

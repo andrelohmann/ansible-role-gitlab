@@ -14,7 +14,7 @@ This role requires ubuntu
 
 The default set of variables defines the gitlab installation and needs at best to be overwritten in group_vars/host_vars. You should be comfortable with the gitlab.rb config file and set the required configurations properly in the gitlab_config variable. Have a clear look at the list items. They reflect the different styles of config parameters appearing in gitlab.rb (four different styles in total). Also don't get confused by single quotes in double quotes. Some values need to be written to the gitlab.rb file as the pure value (e.g. true), while others need to be written encapsulated in string markers (single quotes).
 
-    gitlab_release: latest  # e.g. 16.7.0-ce.0
+    gitlab_release: latest  # e.g. 19.2.0-ce.0
     gitlab_ee: true  # install gitlab-ee or gitlab-ce
 
     # If you are relying on an external postgres database
@@ -124,24 +124,6 @@ The default set of variables defines the gitlab installation and needs at best t
     #       ]
     #     }
 
-    # Install and configure mattermost
-    # gitlab_mattermost_external_url: http://chat.lokal
-    # gitlab_mattermost_additional_configs:
-    #   TeamSettings:
-    #     SiteName: "chat.example.com"
-    #   EmailSettings:
-    #     EnableSignUpWithEmail: False
-    #     EnableSignInWithEmail: False
-    #     EnableSignInWithUsername: False
-    #     SendEmailNotifications: True
-    #     UseChannelInEmailNotifications: True
-    #     FeedbackName: "chat.example.com"
-    #     FeedbackEmail: "gitlab@example.com"
-    #     SMTPUsername: "gitlab@example.com"
-    #     SMTPServer: "localhost"
-    #     SMTPPort: "25"
-    # gitlab_mattermost_backup_dir: /var/archives/mattermost
-
 The following mandatory item needs to be set in gitlab_config.
 
     gitlab_config:
@@ -186,7 +168,7 @@ https://thedatabaseme.de/2022/01/17/automated-testing-your-ansible-role-with-mol
 
 This ansible role is developed using molecule for testing. It's development is based on visual studio code and a regarding development container, solving all dependencies in terms of necessary tools (ansible, linter, molecule).
 
-The role will be tested on two ubuntu containers (noble).
+The role will be tested on two ubuntu containers (24.04 and 26.04).
 
 To startup the molecule test containers from within the development container, the docker socket needs to be bind mounted into the development container.
 
