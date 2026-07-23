@@ -122,22 +122,4 @@ gitlab_config: []
 #       }
 #     })
 
-# Install and configure mattermost
-# gitlab_mattermost_external_url: http://chat.lokal
-# gitlab_mattermost_additional_configs:
-#   TeamSettings:
-#     SiteName: "chat.example.com"
-#   EmailSettings:
-#     EnableSignUpWithEmail: False
-#     EnableSignInWithEmail: False
-#     EnableSignInWithUsername: False
-#     SendEmailNotifications: True
-#     UseChannelInEmailNotifications: True
-#     FeedbackName: "chat.example.com"
-#     FeedbackEmail: "gitlab@example.com"
-#     SMTPUsername: "gitlab@example.com"
-#     SMTPServer: "localhost"
-#     SMTPPort: "25"
-# gitlab_mattermost_backup_dir: /var/archives/mattermost
-
 ...

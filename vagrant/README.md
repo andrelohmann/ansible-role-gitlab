@@ -22,7 +22,7 @@ The vagrant role will be applied automatically during the vagrant up process.
 ```
 vagrant ssh
 cd /etc/ansible/roles/ansible-role-gitlab
-molecule test
+molecule test --all
 ```
 
 ### Test cases
@@ -39,12 +39,6 @@ Login credentials:
 Username: root
 Password: P@ssW0rd.123!
 ```
-
-#### Mattermost
-
-If you want to check the mattermost installation, you need to uncomment the mattermost block in playbook.yml.
-
-* http://chat.lokal
 
 #### Mailpit
 

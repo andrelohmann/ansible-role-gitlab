@@ -10,7 +10,6 @@ configs:
   domain: gitlab.lokal
   aliases:
   - docker.lokal
-  - chat.lokal
   - login.lokal
 
 ...

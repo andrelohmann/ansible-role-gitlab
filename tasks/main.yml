@@ -34,10 +34,6 @@
   ansible.builtin.include_tasks: initial_root_password.yml
   when: gitlab_initial_root_password is defined
 
-- name: Include | Setup mattermost
-  ansible.builtin.include_tasks: mattermost.yml
-  when: gitlab_mattermost_external_url is defined
-
 - name: Flush the gitlab reconfigure handler
   ansible.builtin.meta: flush_handlers
 
